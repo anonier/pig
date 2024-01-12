@@ -68,7 +68,7 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 
 			@Override
 			public boolean ignoreTable(String tableName) {
-				return !"sys_dept".equalsIgnoreCase(tableName);
+				return "sys_user".equalsIgnoreCase(tableName);
 			}
 		}));
 		interceptor.addInnerInterceptor(new PigPaginationInnerInterceptor());
