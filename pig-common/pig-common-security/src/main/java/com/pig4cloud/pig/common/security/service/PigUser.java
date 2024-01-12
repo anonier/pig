@@ -71,13 +71,22 @@ public class PigUser extends User implements OAuth2AuthenticatedPrincipal {
 	@Setter
 	private String clientId;
 
+	/**
+	 * 租户id
+	 */
+	@Getter
+	@Setter
+	private Long tenantId;
+
 	public PigUser(Long id, Long deptId, String username, String password, String phone, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
-			Collection<? extends GrantedAuthority> authorities) {
+			Collection<? extends GrantedAuthority> authorities,String clientId,Long tenantId) {
 		super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 		this.id = id;
 		this.deptId = deptId;
 		this.phone = phone;
+		this.clientId = clientId;
+		this.tenantId = tenantId;
 	}
 
 	/**

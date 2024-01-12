@@ -180,4 +180,10 @@ public class SysUser implements Serializable {
 	 */
 	@Schema(description = "客户端名称")
 	private String clientId;
+
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

@@ -16,13 +16,19 @@
 
 package com.pig4cloud.pig.common.mybatis;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.pig4cloud.pig.common.mybatis.config.MybatisPlusMetaObjectHandler;
 import com.pig4cloud.pig.common.mybatis.plugins.PigPaginationInnerInterceptor;
 import com.pig4cloud.pig.common.mybatis.resolver.SqlFilterArgumentResolver;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -52,6 +58,19 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 	@Bean
 	public MybatisPlusInterceptor mybatisPlusInterceptor() {
 		MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+
+		//租户
+		interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
+			@Override
+			public Expression getTenantId() {
+				return new LongValue(String.valueOf(JSONObject.from(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).get("tenantId")));
+			}
+
+			@Override
+			public boolean ignoreTable(String tableName) {
+				return !"sys_dept".equalsIgnoreCase(tableName);
+			}
+		}));
 		interceptor.addInnerInterceptor(new PigPaginationInnerInterceptor());
 		return interceptor;
 	}
