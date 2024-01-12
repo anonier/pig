@@ -19,6 +19,8 @@ package com.pig4cloud.pig.common.security.service;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.userdetails.User;
@@ -32,6 +34,7 @@ import java.util.Map;
  * @author lengleng
  * @date 2019/2/1 扩展用户信息
  */
+@Accessors(chain = true)
 public class PigUser extends User implements OAuth2AuthenticatedPrincipal {
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
@@ -60,6 +63,13 @@ public class PigUser extends User implements OAuth2AuthenticatedPrincipal {
 	 */
 	@Getter
 	private final String phone;
+
+	/**
+	 * 客户端名称
+	 */
+	@Getter
+	@Setter
+	private String clientId;
 
 	public PigUser(Long id, Long deptId, String username, String password, String phone, boolean enabled,
 			boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,

@@ -18,6 +18,7 @@ package com.pig4cloud.pig.common.security.service;
 
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.dto.UserInfo;
+import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
@@ -39,7 +40,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class PigAppUserDetailsServiceImpl implements PigUserDetailsService {
 
 	private final RemoteUserService remoteUserService;
-
 	private final CacheManager cacheManager;
 
 	/**
@@ -67,13 +67,24 @@ public class PigAppUserDetailsServiceImpl implements PigUserDetailsService {
 	}
 
 	/**
-	 * check-token 使用
-	 * @param pigUser user
-	 * @return
+	 * 手机号登入
 	 */
 	@Override
-	public UserDetails loadUserByUser(PigUser pigUser) {
-		return this.loadUserByUsername(pigUser.getPhone());
+	public UserDetails loadUserByUser(SysUser sysUser) {
+		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
+		if (cache != null && cache.get(sysUser.getPhone()) != null) {
+			return (PigUser) cache.get(sysUser.getPhone()).get();
+		}
+
+		UserDTO userDTO = new UserDTO();
+		userDTO.setPhone(sysUser.getPhone());
+		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
+
+		UserDetails userDetails = getUserDetails(result);
+		if (cache != null) {
+			cache.put(sysUser.getPhone(), userDetails);
+		}
+		return userDetails;
 	}
 
 	/**

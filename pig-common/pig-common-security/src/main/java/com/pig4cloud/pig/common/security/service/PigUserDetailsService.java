@@ -77,7 +77,13 @@ public interface PigUserDetailsService extends UserDetailsService, Ordered {
 	 * @return
 	 */
 	default UserDetails loadUserByUser(PigUser pigUser) {
-		return this.loadUserByUsername(pigUser.getUsername());
+		return this.loadUserByUser(new SysUser(){
+			{
+				setUsername(pigUser.getName());
+				setClientId(pigUser.getClientId());
+			}
+		});
 	}
 
+	UserDetails loadUserByUser(SysUser sysUser);
 }

@@ -18,6 +18,7 @@ package com.pig4cloud.pig.common.security.service;
 
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.dto.UserInfo;
+import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
@@ -41,7 +42,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 
 	private final RemoteUserService remoteUserService;
-
 	private final CacheManager cacheManager;
 
 	/**
@@ -72,4 +72,31 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 		return Integer.MIN_VALUE;
 	}
 
+	/**
+	 * 通过用户实体查询
+	 */
+	@Override
+	public UserDetails loadUserByUser(SysUser sysUser) {
+		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
+		if (cache != null && cache.get(sysUser.getClientId() + ":" + sysUser.getName()) != null) {
+			return (PigUser) cache.get(sysUser.getClientId() + ":" + sysUser.getName()).get();
+		}
+
+		UserDTO userDTO = new UserDTO() {
+			{
+				setUsername(sysUser.getName());
+				setClientId(sysUser.getClientId());
+			}
+		};
+		R<UserInfo> result = null;
+		if ("pig".equals(sysUser.getClientId())) {
+			result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
+		}
+
+		UserDetails userDetails = getUserDetails(result);
+		if (cache != null) {
+			cache.put(sysUser.getClientId() + ":" + sysUser.getName(), userDetails);
+		}
+		return userDetails;
+	}
 }
