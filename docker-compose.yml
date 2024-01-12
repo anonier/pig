@@ -46,7 +46,7 @@ services:
       context: ./pig-auth
     restart: always
     container_name: pig-auth
-    image: pig-auth
+    image: pauly.fun:8009/pig-auth
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
