@@ -34,7 +34,7 @@ services:
       context: ./pig-gateway
     restart: always
     container_name: pig-gateway
-    image: pig-gateway
+    image: pauly.fun:8009/pig-gateway
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
@@ -58,21 +58,21 @@ services:
       context: ./pig-upms/pig-upms-biz
     restart: always
     container_name: pig-upms
-    image: pig-upms
+    image: pauly.fun:8009/pig-upms
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
       - "pig-register:127.0.0.1"
       - "pig-mysql:127.0.0.1"
-      - "order-job:127.0.0.1"
-      - "order-seata:127.0.0.1"
+      - "pig-job:127.0.0.1"
+      - "pig-seata:127.0.0.1"
 
   pig-monitor:
     build:
       context: ./pig-visual/pig-monitor
     restart: always
     container_name: pig-monitor
-    image: pig-monitor
+    image: pauly.fun:8009/pig-monitor
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
@@ -84,7 +84,7 @@ services:
       context: ./pig-visual/pig-codegen
     restart: always
     container_name: pig-codegen
-    image: pig-codegen
+    image: pauly.fun:8009/pig-codegen
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
