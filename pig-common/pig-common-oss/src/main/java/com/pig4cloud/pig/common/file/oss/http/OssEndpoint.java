@@ -17,6 +17,7 @@
 
 package com.pig4cloud.pig.common.file.oss.http;
 
+import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -49,6 +50,16 @@ import java.util.Map;
 public class OssEndpoint {
 
 	private final OssTemplate template;
+
+	@GetMapping("/getStsToken")
+	public AssumeRoleResponse getStsToken() {
+		return template.getStsToken();
+	}
+
+	@PostMapping("/upload")
+	public String upload(@RequestParam("picture") MultipartFile file) {
+		return template.upload(file);
+	}
 
 	/**
 	 * Bucket Endpoints

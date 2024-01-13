@@ -50,7 +50,7 @@ public class OssProperties {
 	 * supports virtual-hosted-style 阿里云等需要配置为 virtual-hosted-style
 	 * 模式{http://bucketname.endpoint}
 	 */
-	private Boolean pathStyleAccess = true;
+	private Boolean pathStyleAccess = false;
 
 	/**
 	 * 应用ID
@@ -77,4 +77,18 @@ public class OssProperties {
 	 */
 	private Integer maxConnections = 100;
 
+	/**
+	 * stsUrl
+	 */
+	private String stsEndpoint;
+
+	/**
+	 * 用户角色信息(限制访问)
+	 */
+	private String roleArn;
+
+	/**
+	 * bucket
+	 */
+	private String bucket;
 }
