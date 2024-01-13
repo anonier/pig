@@ -51,4 +51,9 @@ public class GenTemplateGroupEntity extends Model<GenTemplateGroupEntity> {
 	@Schema(description = "模板id")
 	private Long templateId;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

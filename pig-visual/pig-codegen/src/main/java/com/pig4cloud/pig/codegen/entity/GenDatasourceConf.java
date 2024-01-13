@@ -18,6 +18,7 @@ package com.pig4cloud.pig.codegen.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -111,4 +112,9 @@ public class GenDatasourceConf extends Model<GenDatasourceConf> {
 	@TableField(fill = FieldFill.INSERT)
 	private String delFlag;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

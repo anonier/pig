@@ -169,4 +169,9 @@ public class GenTable extends Model<GenTable> {
 	@TableField(exist = false)
 	private List<GenGroupEntity> groupList;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }
