@@ -42,5 +42,6 @@
         <module>pig-common-swagger</module>
         <module>pig-common-xss</module>
 		<module>pig-common-redisson</module>
+		<module>pig-common-api</module>
     </modules>
 </project>
