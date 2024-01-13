@@ -51,4 +51,9 @@ public class SysDeptRelation extends Model<SysDeptRelation> {
 	@Schema(description = "后代节点")
 	private Long descendant;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

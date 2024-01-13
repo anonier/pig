@@ -19,6 +19,7 @@
 
 package com.pig4cloud.pig.admin.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -27,6 +28,7 @@ import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -72,4 +74,16 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 */
 	List<UserVO> selectVoList(@Param("query") UserDTO userDTO);
 
+	@Select("<script>"
+			+ "SELECT * from sys_user "
+			+ "WHERE 1=1 "
+			+ "<if test='username != null'>"
+			+ "and username = #{username}"
+			+ "</if>"
+			+ "<if test='phone != null'>"
+			+ "and phone = #{phone}"
+			+ "</if>"
+			+ "</script>")
+	@InterceptorIgnore(tenantLine = "true")
+	SysUser getByUsernameAndPhone(@Param("username") String username, @Param("phone") String phone);
 }

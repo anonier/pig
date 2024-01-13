@@ -19,9 +19,12 @@
 
 package com.pig4cloud.pig.admin.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pig4cloud.pig.admin.api.entity.SysOauthClientDetails;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -34,4 +37,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysOauthClientDetailsMapper extends BaseMapper<SysOauthClientDetails> {
 
+	@InterceptorIgnore(tenantLine = "true")
+	@Select("SELECT * FROM sys_oauth_client_details WHERE del_flag = '0' AND client_id = #{clientId} ")
+	SysOauthClientDetails getByClientId(@Param("clientId") String clientId);
 }

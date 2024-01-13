@@ -98,4 +98,8 @@ public class SysOauthClientDetailsServiceImpl extends ServiceImpl<SysOauthClient
 		return R.ok();
 	}
 
+	@Override
+	public SysOauthClientDetails getOne(String clientId) {
+		return baseMapper.getByClientId(clientId);
+	}
 }

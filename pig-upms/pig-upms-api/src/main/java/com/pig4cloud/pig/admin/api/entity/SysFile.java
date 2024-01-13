@@ -111,4 +111,9 @@ public class SysFile extends Model<SysFile> {
 	@Schema(description = "删除标记,1:已删除,0:正常")
 	private String delFlag;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

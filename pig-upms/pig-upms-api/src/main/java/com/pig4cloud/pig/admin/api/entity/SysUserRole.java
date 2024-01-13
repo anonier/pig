@@ -51,4 +51,9 @@ public class SysUserRole extends Model<SysUserRole> {
 	@Schema(description = "角色id")
 	private Long roleId;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

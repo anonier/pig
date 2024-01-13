@@ -33,17 +33,16 @@
 
 	<!-- 通过用户ID，查询角色信息-->
 	<select id="listRolesByUserId" resultMap="BaseResultMap">
-		SELECT sys_role.role_id,
-			   sys_role.role_name,
-			   sys_role.role_code,
-			   sys_role.role_desc,
-			   sys_role.create_time,
-			   sys_role.update_time,
-			   sys_role.del_flag
-		FROM sys_role,
-			 sys_user_role
-		WHERE sys_role.role_id = sys_user_role.role_id
-		  AND sys_role.del_flag = '0'
-		  and sys_user_role.user_id = #{userId}
+		SELECT r.role_id,
+			   r.role_name,
+			   r.role_code,
+			   r.role_desc,
+			   r.create_time,
+			   r.update_time,
+			   r.del_flag
+		FROM sys_role r left join sys_user_role u on r.role_id = u.role_id
+		WHERE
+			r.del_flag = '0'
+		  	and u.user_id = #{userId}
 	</select>
 </mapper>

@@ -42,26 +42,26 @@
 
 	<!--通过角色查询菜单信息-->
 	<select id="listMenusByRoleId" resultMap="BaseResultMap">
-		SELECT sys_menu.menu_id,
-			   sys_menu.name,
-			   sys_menu.en_name,
-			   sys_menu.permission,
-			   sys_menu.path,
-			   sys_menu.parent_id,
-			   sys_menu.icon,
-			   sys_menu.sort_order,
-			   sys_menu.keep_alive,
-			   sys_menu.menu_type,
-			   sys_menu.create_time,
-			   sys_menu.update_time,
-			   sys_menu.del_flag,
-			   sys_menu.embedded,
-			   sys_menu.visible
-		FROM sys_menu
-					 LEFT JOIN sys_role_menu ON sys_menu.menu_id = sys_role_menu.menu_id
-		WHERE sys_menu.del_flag = '0'
-		  AND sys_role_menu.role_id = #{roleId}
-		ORDER BY sys_menu.sort_order DESC
+		SELECT m.menu_id,
+			   m.name,
+			   m.en_name,
+			   m.permission,
+			   m.path,
+			   m.parent_id,
+			   m.icon,
+			   m.sort_order,
+			   m.keep_alive,
+			   m.menu_type,
+			   m.create_time,
+			   m.update_time,
+			   m.del_flag,
+			   m.embedded,
+			   m.visible
+		FROM sys_menu m
+					 LEFT JOIN sys_role_menu r ON m.menu_id = r.menu_id
+		WHERE m.del_flag = '0'
+		  AND r.role_id = #{roleId}
+		ORDER BY m.sort_order DESC
 	</select>
 
 	<!--通过角色ID 查询权限-->

@@ -19,6 +19,7 @@
 
 package com.pig4cloud.pig.admin.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pig4cloud.pig.admin.api.entity.SysRole;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,6 +42,7 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
 	 * @param userId
 	 * @return
 	 */
+	@InterceptorIgnore(tenantLine = "true")
 	List<SysRole> listRolesByUserId(Long userId);
 
 }

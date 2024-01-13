@@ -131,4 +131,12 @@ public interface SysUserService extends IService<SysUser> {
 	 */
 	R checkPassword(String password);
 
+	/**
+	 * 登入时获取用户信息(不进行租户校验)
+	 *
+	 * @param username
+	 * @param phone
+	 * @return
+	 */
+	SysUser getOne(String username, String phone);
 }

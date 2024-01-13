@@ -68,10 +68,7 @@ public class SysUserController {
 	@Inner
 	@GetMapping(value = { "/info/query" })
 	public R info(@RequestParam(required = false) String username, @RequestParam(required = false) String phone) {
-		SysUser user = userService.getOne(Wrappers.<SysUser>query()
-			.lambda()
-			.eq(StrUtil.isNotBlank(username), SysUser::getUsername, username)
-			.eq(StrUtil.isNotBlank(phone), SysUser::getPhone, phone));
+		SysUser user = userService.getOne(username,phone);
 		if (user == null) {
 			return R.failed(MsgUtils.getMessage(ErrorCodes.SYS_USER_USERINFO_EMPTY, username));
 		}

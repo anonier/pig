@@ -127,8 +127,7 @@ public class SysClientController {
 	@Inner(false)
 	@GetMapping("/getClientDetailsById/{clientId}")
 	public R getClientDetailsById(@PathVariable String clientId) {
-		return R.ok(clientDetailsService.getOne(
-				Wrappers.<SysOauthClientDetails>lambdaQuery().eq(SysOauthClientDetails::getClientId, clientId), false));
+		return R.ok(clientDetailsService.getOne(clientId));
 	}
 
 	/**

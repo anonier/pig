@@ -150,9 +150,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		roleIds.forEach(roleId -> {
 			List<String> permissionList = sysMenuService.findMenuByRoleId(roleId)
 				.stream()
-				.filter(menu -> StrUtil.isNotEmpty(menu.getPermission()))
 				.map(SysMenu::getPermission)
-				.collect(Collectors.toList());
+				.filter(StrUtil::isNotEmpty)
+				.toList();
 			permissions.addAll(permissionList);
 		});
 		userInfo.setPermissions(ArrayUtil.toArray(permissions, String.class));
@@ -453,4 +453,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 	}
 
+	@Override
+	public SysUser getOne(String username, String phone) {
+		return baseMapper.getByUsernameAndPhone(username,phone);
+	}
 }

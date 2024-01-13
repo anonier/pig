@@ -152,4 +152,9 @@ public class SysOauthClientDetails extends Model<SysOauthClientDetails> {
 	@Schema(description = "更新时间")
 	private LocalDateTime updateTime;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

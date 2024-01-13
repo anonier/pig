@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerIntercept
 import com.pig4cloud.pig.common.mybatis.config.MybatisPlusMetaObjectHandler;
 import com.pig4cloud.pig.common.mybatis.plugins.PigPaginationInnerInterceptor;
 import com.pig4cloud.pig.common.mybatis.resolver.SqlFilterArgumentResolver;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 import org.springframework.context.annotation.Bean;
@@ -40,11 +41,13 @@ import java.util.List;
  * <p>
  * mybatis plus 统一配置
  */
+@Slf4j
 @Configuration(proxyBeanMethods = false)
 public class MybatisAutoConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * SQL 过滤器避免SQL 注入
+	 *
 	 * @param argumentResolvers
 	 */
 	@Override
@@ -63,12 +66,19 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 		interceptor.addInnerInterceptor(new TenantLineInnerInterceptor(new TenantLineHandler() {
 			@Override
 			public Expression getTenantId() {
-				return new LongValue(String.valueOf(JSONObject.from(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).get("tenantId")));
+				LongValue longValue;
+				try {
+					longValue = new LongValue(String.valueOf(JSONObject.from(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).get("tenantId")));
+				} catch (Exception e) {
+					log.info("未查到租户id");
+					return null;
+				}
+				return longValue;
 			}
 
 			@Override
 			public boolean ignoreTable(String tableName) {
-				return "sys_user".equalsIgnoreCase(tableName);
+				return false;
 			}
 		}));
 		interceptor.addInnerInterceptor(new PigPaginationInnerInterceptor());
@@ -77,6 +87,7 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * 审计字段自动填充
+	 *
 	 * @return {@link MetaObjectHandler}
 	 */
 	@Bean

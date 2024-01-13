@@ -46,4 +46,9 @@ public class SysUserPost extends Model<SysUserPost> {
 	@Schema(description = "岗位id")
 	private Long postId;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

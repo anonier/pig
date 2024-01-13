@@ -104,4 +104,9 @@ public class SysDept extends Model<SysDept> {
 	@TableField(fill = FieldFill.INSERT)
 	private String delFlag;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }

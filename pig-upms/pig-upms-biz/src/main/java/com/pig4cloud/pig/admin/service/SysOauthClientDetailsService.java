@@ -62,4 +62,11 @@ public interface SysOauthClientDetailsService extends IService<SysOauthClientDet
 	 */
 	R syncClientCache();
 
+	/**
+	 * 登入时获取客户端信息
+	 *
+	 * @param clientId
+	 * @return
+	 */
+	SysOauthClientDetails getOne(String clientId);
 }

@@ -111,4 +111,9 @@ public class SysPost extends Model<SysPost> {
 	@TableField(fill = FieldFill.UPDATE)
 	private LocalDateTime updateTime;
 
+	/**
+	 * 租户id
+	 */
+	@Schema(description = "租户id")
+	private Long tenantId;
 }
