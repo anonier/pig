@@ -65,6 +65,7 @@ public class PigCustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) principal;
 			Object tokenPrincipal = usernamePasswordAuthenticationToken.getPrincipal();
 			userDetails = optional.get().loadUserByUser(((PigUser) tokenPrincipal).setClientId(oldAuthorization.getRegisteredClientId()));
+			TenantContextHolder.setTenantId(((PigUser)userDetails).getTenantId());
 		}
 		catch (UsernameNotFoundException notFoundException) {
 			log.warn("用户不不存在 {}", notFoundException.getLocalizedMessage());

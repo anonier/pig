@@ -31,6 +31,10 @@
 
 
     <dependencies>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>transmittable-thread-local</artifactId>
+		</dependency>
         <!--工具类核心包-->
         <dependency>
             <groupId>com.pig4cloud</groupId>
