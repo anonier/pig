@@ -68,7 +68,7 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 			public Expression getTenantId() {
 				LongValue longValue;
 				try {
-					longValue = new LongValue(String.valueOf(JSONObject.from(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).get("tenantId")));
+					longValue = new LongValue(TenantContextHolder.getTenantId());
 				} catch (Exception e) {
 					log.info("未查到租户id");
 					return null;

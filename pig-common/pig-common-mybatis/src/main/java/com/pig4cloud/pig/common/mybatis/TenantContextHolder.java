@@ -15,7 +15,7 @@
  * Author: lengleng (wangiegie@gmail.com)
  */
 
-package com.pig4cloud.pig.common.security.component;
+package com.pig4cloud.pig.common.mybatis;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;

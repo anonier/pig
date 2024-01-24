@@ -2,6 +2,7 @@ package com.pig4cloud.pig.common.security.component;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import com.pig4cloud.pig.common.security.service.PigUser;
 import com.pig4cloud.pig.common.security.service.PigUserDetailsService;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * Author: lengleng (wangiegie@gmail.com)
  */
 
-package com.pig4cloud.pig.common.security.component;
+package com.pig4cloud.pig.common.mybatis;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
