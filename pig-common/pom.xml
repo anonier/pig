@@ -43,5 +43,6 @@
         <module>pig-common-xss</module>
 		<module>pig-common-redisson</module>
 		<module>pig-common-api</module>
+		<module>pig-common-job</module>
     </modules>
 </project>
