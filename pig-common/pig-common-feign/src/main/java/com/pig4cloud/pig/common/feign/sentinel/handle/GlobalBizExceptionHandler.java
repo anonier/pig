@@ -31,6 +31,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -65,13 +66,13 @@ public class GlobalBizExceptionHandler {
 
 	/**
 	 * 处理业务校验过程中碰到的非法参数异常 该异常基本由{@link org.springframework.util.Assert}抛出
+	 * @param exception 参数校验异常
+	 * @return API返回结果对象包装后的错误输出结果
 	 * @see Assert#hasLength(String, String)
 	 * @see Assert#hasText(String, String)
 	 * @see Assert#isTrue(boolean, String)
 	 * @see Assert#isNull(Object, String)
 	 * @see Assert#notNull(Object, String)
-	 * @param exception 参数校验异常
-	 * @return API返回结果对象包装后的错误输出结果
 	 */
 	@ExceptionHandler(IllegalArgumentException.class)
 	@ResponseStatus(HttpStatus.OK)
@@ -118,6 +119,21 @@ public class GlobalBizExceptionHandler {
 		List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
 		log.warn("参数绑定异常,ex = {}", fieldErrors.get(0).getDefaultMessage());
 		return R.failed(fieldErrors.get(0).getDefaultMessage());
+	}
+
+	/**
+	 * 保持和低版本请求路径不存在的行为一致
+	 * <p>
+	 * <a href="https://github.com/spring-projects/spring-boot/issues/38733">[Spring Boot
+	 * 3.2.0] 404 Not Found behavior #38733</a>
+	 * @param exception
+	 * @return R
+	 */
+	@ExceptionHandler({ NoResourceFoundException.class })
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public R bindExceptionHandler(NoResourceFoundException exception) {
+		log.debug("请求路径 404 {}", exception.getMessage());
+		return R.failed(exception.getMessage());
 	}
 
 }
