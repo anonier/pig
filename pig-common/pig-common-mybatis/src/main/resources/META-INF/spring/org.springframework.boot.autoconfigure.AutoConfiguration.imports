@@ -1,1 +1,2 @@
 com.pig4cloud.pig.common.mybatis.MybatisAutoConfiguration
+com.pig4cloud.pig.common.mybatis.TenantContextHolderFilter
