@@ -28,7 +28,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.admin.api.dto.SysLogDTO;
 import com.pig4cloud.pig.admin.api.entity.SysLog;
 import com.pig4cloud.pig.admin.mapper.SysLogMapper;
+import com.pig4cloud.pig.admin.mapper.notenant.NoTenantLogMapper;
 import com.pig4cloud.pig.admin.service.SysLogService;
+import com.pig4cloud.pig.common.security.util.SecurityUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +44,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author lengleng
  * @since 2017-11-20
  */
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> implements SysLogService {
+
+	private final NoTenantLogMapper noTenantLogMapper;
 
 	@Override
 	public Page getLogByPage(Page page, SysLogDTO sysLog) {
@@ -56,6 +64,9 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 				.le(SysLog::getCreateTime, sysLog.getCreateTime()[1]);
 		}
 
+		if (1 == SecurityUtils.getUser().getId()){
+			return noTenantLogMapper.selectPage(page, wrapper);
+		}
 		return baseMapper.selectPage(page, wrapper);
 	}
 
