@@ -24,6 +24,7 @@ import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.SpringContextHolder;
 import com.pig4cloud.pig.common.log.event.SysLogEvent;
 import com.pig4cloud.pig.common.log.util.SysLogUtils;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import com.pig4cloud.pig.common.security.component.PigCustomOAuth2AccessTokenResponseHttpMessageConverter;
 import com.pig4cloud.pig.common.security.service.PigUser;
 import jakarta.servlet.http.HttpServletRequest;
@@ -81,6 +82,7 @@ public class PigAuthenticationSuccessEventHandler implements AuthenticationSucce
 				logVo.setTime(endTime - startTime);
 			}
 			logVo.setCreateBy(userInfo.getName());
+			logVo.setTenantId(TenantContextHolder.getTenantId());
 			SpringContextHolder.publishEvent(new SysLogEvent(logVo));
 		}
 

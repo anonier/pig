@@ -23,6 +23,7 @@ import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +80,7 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 	public UserDetails loadUserByUser(SysUser sysUser) {
 		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
 		if (cache != null && cache.get(sysUser.getClientId() + ":" + sysUser.getUsername()) != null) {
+			TenantContextHolder.setTenantId(((PigUser) cache.get(sysUser.getClientId() + ":" + sysUser.getUsername()).get()).getTenantId());
 			return (PigUser) cache.get(sysUser.getClientId() + ":" + sysUser.getUsername()).get();
 		}
 
@@ -97,6 +99,7 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 		if (cache != null) {
 			cache.put(sysUser.getClientId() + ":" + sysUser.getUsername(), userDetails);
 		}
+		TenantContextHolder.setTenantId(result.getData().getSysUser().getTenantId());
 		return userDetails;
 	}
 }

@@ -22,6 +22,7 @@ import com.pig4cloud.pig.common.log.event.SysLogEvent;
 import com.pig4cloud.pig.common.log.event.SysLogEventSource;
 import com.pig4cloud.pig.common.log.util.LogTypeEnum;
 import com.pig4cloud.pig.common.log.util.SysLogUtils;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +86,7 @@ public class SysLogAspect {
 		finally {
 			Long endTime = System.currentTimeMillis();
 			logVo.setTime(endTime - startTime);
+			logVo.setTenantId(TenantContextHolder.getTenantId());
 			SpringContextHolder.publishEvent(new SysLogEvent(logVo));
 		}
 

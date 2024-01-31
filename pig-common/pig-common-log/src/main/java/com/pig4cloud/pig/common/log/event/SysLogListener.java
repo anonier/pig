@@ -27,7 +27,6 @@ import com.pig4cloud.pig.admin.api.feign.RemoteLogService;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.jackson.PigJavaTimeModule;
 import com.pig4cloud.pig.common.log.config.PigLogProperties;
-import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +60,6 @@ public class SysLogListener implements InitializingBean {
 		SysLogEventSource source = (SysLogEventSource) event.getSource();
 		SysLog sysLog = new SysLog();
 		BeanUtils.copyProperties(source, sysLog);
-		sysLog.setTenantId(TenantContextHolder.getTenantId());
 
 		// json 格式刷参数放在异步中处理，提升性能
 		if (Objects.nonNull(source.getBody())) {
