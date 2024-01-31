@@ -28,7 +28,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.admin.api.dto.SysLogDTO;
 import com.pig4cloud.pig.admin.api.entity.SysLog;
 import com.pig4cloud.pig.admin.mapper.SysLogMapper;
+import com.pig4cloud.pig.admin.mapper.notenant.NoTenantLogMapper;
 import com.pig4cloud.pig.admin.service.SysLogService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +45,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> implements SysLogService {
 
+	@Resource
+	private NoTenantLogMapper noTenantLogMapper;
+
 	@Override
 	public Page getLogByPage(Page page, SysLogDTO sysLog) {
 
@@ -56,7 +61,7 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 				.le(SysLog::getCreateTime, sysLog.getCreateTime()[1]);
 		}
 
-		return baseMapper.selectPage(page, wrapper);
+		return noTenantLogMapper.selectPage(page, wrapper);
 	}
 
 	/**
