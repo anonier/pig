@@ -30,7 +30,8 @@ import com.pig4cloud.pig.admin.api.entity.SysLog;
 import com.pig4cloud.pig.admin.mapper.SysLogMapper;
 import com.pig4cloud.pig.admin.mapper.notenant.NoTenantLogMapper;
 import com.pig4cloud.pig.admin.service.SysLogService;
-import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,11 +43,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author lengleng
  * @since 2017-11-20
  */
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> implements SysLogService {
 
-	@Resource
-	private NoTenantLogMapper noTenantLogMapper;
+	private final NoTenantLogMapper noTenantLogMapper;
 
 	@Override
 	public Page getLogByPage(Page page, SysLogDTO sysLog) {
