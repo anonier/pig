@@ -19,6 +19,7 @@ package com.pig4cloud.pig.auth.endpoint;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.TemporalAccessorUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.admin.api.entity.SysOauthClientDetails;
@@ -31,7 +32,9 @@ import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.core.util.RetOps;
 import com.pig4cloud.pig.common.core.util.SpringContextHolder;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import com.pig4cloud.pig.common.security.annotation.Inner;
+import com.pig4cloud.pig.common.security.service.PigUser;
 import com.pig4cloud.pig.common.security.util.OAuth2EndpointUtils;
 import com.pig4cloud.pig.common.security.util.OAuth2ErrorCodesExpand;
 import com.pig4cloud.pig.common.security.util.OAuthClientException;
@@ -40,6 +43,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -183,7 +187,13 @@ public class PigTokenEndpoint {
 			return R.ok();
 		}
 		// 清空用户信息（立即删除）
-		cacheManager.getCache(CacheConstants.USER_DETAILS).evictIfPresent(authorization.getPrincipalName());
+		Cache.ValueWrapper valueWrapper = cacheManager.getCache(CacheConstants.USER_DETAILS)
+				.get(authorization.getRegisteredClientId() + ":" + authorization.getPrincipalName());
+		if (ObjectUtil.isNotNull(valueWrapper)) {
+			PigUser pigUser = (PigUser) (valueWrapper.get());
+			TenantContextHolder.setTenantId(pigUser.getTenantId());
+			cacheManager.getCache(CacheConstants.USER_DETAILS).evictIfPresent(authorization.getRegisteredClientId() + ":" + authorization.getPrincipalName());
+		}
 		// 清空access token
 		authorizationService.remove(authorization);
 		// 处理自定义退出事件，保存相关日志

@@ -21,6 +21,7 @@ import com.pig4cloud.pig.common.core.util.SpringContextHolder;
 import com.pig4cloud.pig.common.core.util.WebUtils;
 import com.pig4cloud.pig.common.log.event.SysLogEvent;
 import com.pig4cloud.pig.common.log.util.SysLogUtils;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.http.HttpHeaders;
@@ -70,6 +71,7 @@ public class PigLogoutSuccessEventHandler implements ApplicationListener<LogoutS
 			logVo.setServiceId(authentication.getCredentials().toString());
 		}
 		logVo.setCreateBy(authentication.getName());
+		logVo.setTenantId(TenantContextHolder.getTenantId());
 		SpringContextHolder.publishEvent(new SysLogEvent(logVo));
 	}
 
