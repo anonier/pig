@@ -26,6 +26,7 @@ import com.pig4cloud.pig.common.core.util.SpringContextHolder;
 import com.pig4cloud.pig.common.log.event.SysLogEvent;
 import com.pig4cloud.pig.common.log.util.LogTypeEnum;
 import com.pig4cloud.pig.common.log.util.SysLogUtils;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
@@ -76,6 +77,7 @@ public class PigAuthenticationFailureEventHandler implements AuthenticationFailu
 			logVo.setTime(endTime - startTime);
 		}
 		logVo.setCreateBy(username);
+		logVo.setTenantId(TenantContextHolder.getTenantId());
 		SpringContextHolder.publishEvent(new SysLogEvent(logVo));
 		// 写出错误信息
 		sendErrorResponse(request, response, exception);
