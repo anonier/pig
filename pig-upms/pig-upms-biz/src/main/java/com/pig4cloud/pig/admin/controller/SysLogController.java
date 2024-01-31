@@ -24,7 +24,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.admin.api.dto.SysLogDTO;
 import com.pig4cloud.pig.admin.api.entity.SysLog;
-import com.pig4cloud.pig.admin.mapper.notenant.NoTenantLogMapper;
 import com.pig4cloud.pig.admin.service.SysLogService;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.security.annotation.Inner;
@@ -56,7 +55,6 @@ import java.util.List;
 public class SysLogController {
 
 	private final SysLogService sysLogService;
-	private final NoTenantLogMapper noTenantLogMapper;
 
 	/**
 	 * 简单分页查询
@@ -77,7 +75,7 @@ public class SysLogController {
 	@DeleteMapping
 	@PreAuthorize("@pms.hasPermission('sys_log_del')")
 	public R removeByIds(@RequestBody Long[] ids) {
-		return R.ok(noTenantLogMapper.deleteBatchIds(CollUtil.toList(ids)));
+		return R.ok(sysLogService.removeBatchByIds(CollUtil.toList(ids)));
 	}
 
 	/**
@@ -100,7 +98,7 @@ public class SysLogController {
 	@GetMapping("/export")
 	@PreAuthorize("@pms.hasPermission('sys_log_export')")
 	public List<SysLog> export(SysLog sysLog) {
-		return noTenantLogMapper.selectList(Wrappers.query(sysLog));
+		return sysLogService.list(Wrappers.query(sysLog));
 	}
 
 }
