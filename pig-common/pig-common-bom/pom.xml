@@ -6,7 +6,7 @@
 
     <groupId>com.pig4cloud</groupId>
     <artifactId>pig-common-bom</artifactId>
-    <version>3.7.3</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <name>pig-common-bom</name>
@@ -14,13 +14,13 @@
     <description>pig cloud parent</description>
 
     <properties>
-        <pig.common.version>${project.version}</pig.common.version>
-        <spring-boot.version>3.2.1</spring-boot.version>
+        <!-- 项目版本号 -->
+        <revision>3.7.4</revision>
+        <spring-boot.version>3.2.2</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <git.commit.plugin>4.9.9</git.commit.plugin>
-        <spring.checkstyle.plugin>0.0.39</spring.checkstyle.plugin>
         <fastjson.version>1.2.83</fastjson.version>
 		<fastjson2.version>2.0.45</fastjson2.version>
         <knife4j.version>3.0.3</knife4j.version>
@@ -28,7 +28,7 @@
         <swagger.core.version>2.2.14</swagger.core.version>
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <mysql.version>8.0.33</mysql.version>
-        <dynamic-ds.version>4.2.0</dynamic-ds.version>
+        <dynamic-ds.version>4.3.0</dynamic-ds.version>
         <seata.version>1.7.0</seata.version>
         <excel.version>3.1.0</excel.version>
         <asm.version>7.1</asm.version>
@@ -37,6 +37,8 @@
         <shardingsphere.version>5.4.1</shardingsphere.version>
         <hutool.version>5.8.23</hutool.version>
         <sentinel.version>1.8.4</sentinel.version>
+        <spring.checkstyle.plugin>0.0.39</spring.checkstyle.plugin>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
 		<redission.version>3.24.1</redission.version>
 		<validation.version>3.1.4</validation.version>
 		<ttl.version>2.11.4</ttl.version>
@@ -83,52 +85,52 @@
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-core</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-datasource</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-log</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-mybatis</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-oss</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-security</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-feign</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-swagger</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-common-xss</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-upms-api</artifactId>
-                <version>${pig.common.version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.mysql</groupId>
@@ -238,6 +240,32 @@
                 <groupId>io.spring.javaformat</groupId>
                 <artifactId>spring-javaformat-maven-plugin</artifactId>
                 <version>${spring.checkstyle.plugin}</version>
+            </plugin>
+            <!-- 统一 revision 版本 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
