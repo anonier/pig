@@ -152,10 +152,4 @@ public class SysMenu extends Model<SysMenu> {
 	@TableField(fill = FieldFill.INSERT)
 	@Schema(description = "删除标记,1:已删除,0:正常")
 	private String delFlag;
-
-	/**
-	 * 租户id
-	 */
-	@Schema(description = "租户id")
-	private Long tenantId;
 }
