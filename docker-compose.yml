@@ -1,40 +1,40 @@
 version: '3'
 services:
-  pig-mysql:
-    build:
-      context: ./db
-    environment:
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_ROOT_PASSWORD: root
-    restart: always
-    container_name: pig-mysql
-    image: pig-mysql
-    ports:
-      - 3306:3306
-    networks:
-      - spring_cloud_default
-
-  pig-redis:
-    image: redis:7.0.0
-    ports:
-      - 6379:6379
-    restart: always
-    container_name: pig-redis
-    hostname: pig-redis
-    networks:
-      - spring_cloud_default
+#  pig-mysql:
+#    build:
+#      context: ./db
+#    environment:
+#      MYSQL_ROOT_HOST: "%"
+#      MYSQL_ROOT_PASSWORD: root
+#    restart: always
+#    container_name: pig-mysql
+#    image: pig-mysql
+#    ports:
+#      - 3306:3306
+#    networks:
+#      - spring_cloud_default
+#
+#  pig-redis:
+#    image: redis:7.0.0
+#    ports:
+#      - 6379:6379
+#    restart: always
+#    container_name: pig-redis
+#    hostname: pig-redis
+#    networks:
+#      - spring_cloud_default
 
   pig-upms:
     build:
       context: ./pig-upms/pig-upms-biz
     restart: always
-    container_name: pig-upms
+    container_name: pig-boot
     hostname: pig-upms
-    image: pig-upms
-    networks:
-      - spring_cloud_default
-
-networks:
-  spring_cloud_default:
-    name:  spring_cloud_default
-    driver: bridge
+    image: pauly.fun:8009/pig-boot
+#    networks:
+#      - spring_cloud_default
+#
+#networks:
+#  spring_cloud_default:
+#    name:  spring_cloud_default
+#    driver: bridge
