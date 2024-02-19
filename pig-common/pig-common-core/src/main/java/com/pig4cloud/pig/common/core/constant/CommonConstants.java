@@ -35,7 +35,7 @@ public interface CommonConstants {
 	/**
 	 * 锁定
 	 */
-	String STATUS_LOCK = "9";
+	String STATUS_LOCK = "1";
 
 	/**
 	 * 菜单树根节点

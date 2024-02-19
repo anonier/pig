@@ -60,12 +60,12 @@ public class SysUser implements Serializable {
 	@Schema(description = "密码")
 	private String password;
 
-	/**
-	 * 随机盐
-	 */
-	@JsonIgnore
-	@Schema(description = "随机盐")
-	private String salt;
+//	/**
+//	 * 随机盐
+//	 */
+//	@JsonIgnore
+//	@Schema(description = "随机盐")
+//	private String salt;
 
 	/**
 	 * 创建人
@@ -104,10 +104,10 @@ public class SysUser implements Serializable {
 	private String delFlag;
 
 	/**
-	 * 锁定标记
+	 * 0开启 1停用
 	 */
-	@Schema(description = "锁定标记")
-	private String lockFlag;
+	@Schema(description = "状态")
+	private String status;
 
 	/**
 	 * 手机号
@@ -127,35 +127,35 @@ public class SysUser implements Serializable {
 	@Schema(description = "用户所属部门id")
 	private Long deptId;
 
-	/**
-	 * 微信openid
-	 */
-	@Schema(description = "微信openid")
-	private String wxOpenid;
-
-	/**
-	 * 微信小程序openId
-	 */
-	@Schema(description = "微信小程序openid")
-	private String miniOpenid;
-
-	/**
-	 * QQ openid
-	 */
-	@Schema(description = "QQ openid")
-	private String qqOpenid;
-
-	/**
-	 * 码云唯一标识
-	 */
-	@Schema(description = "码云唯一标识")
-	private String giteeLogin;
-
-	/**
-	 * 开源中国唯一标识
-	 */
-	@Schema(description = "开源中国唯一标识")
-	private String oscId;
+//	/**
+//	 * 微信openid
+//	 */
+//	@Schema(description = "微信openid")
+//	private String wxOpenid;
+//
+//	/**
+//	 * 微信小程序openId
+//	 */
+//	@Schema(description = "微信小程序openid")
+//	private String miniOpenid;
+//
+//	/**
+//	 * QQ openid
+//	 */
+//	@Schema(description = "QQ openid")
+//	private String qqOpenid;
+//
+//	/**
+//	 * 码云唯一标识
+//	 */
+//	@Schema(description = "码云唯一标识")
+//	private String giteeLogin;
+//
+//	/**
+//	 * 开源中国唯一标识
+//	 */
+//	@Schema(description = "开源中国唯一标识")
+//	private String oscId;
 
 	/**
 	 * 昵称
@@ -163,11 +163,11 @@ public class SysUser implements Serializable {
 	@Schema(description = "昵称")
 	private String nickname;
 
-	/**
-	 * 姓名
-	 */
-	@Schema(description = "姓名")
-	private String name;
+//	/**
+//	 * 姓名
+//	 */
+//	@Schema(description = "姓名")
+//	private String name;
 
 	/**
 	 * 邮箱

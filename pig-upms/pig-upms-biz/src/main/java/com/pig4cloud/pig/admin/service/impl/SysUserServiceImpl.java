@@ -211,7 +211,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		sysUser.setUserId(userVO.getUserId());
 		sysUser.setAvatar(userDto.getAvatar());
 		sysUser.setNickname(userDto.getNickname());
-		sysUser.setName(userDto.getName());
+//		sysUser.setName(userDto.getName());
 		sysUser.setEmail(userDto.getEmail());
 		return R.ok(this.updateById(sysUser));
 	}
@@ -359,7 +359,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		userDTO.setUsername(excel.getUsername());
 		userDTO.setPhone(excel.getPhone());
 		userDTO.setNickname(excel.getNickname());
-		userDTO.setName(excel.getName());
+//		userDTO.setName(excel.getName());
 		userDTO.setEmail(excel.getEmail());
 		// 批量导入初始密码为手机号
 		userDTO.setPassword(userDTO.getPhone());
@@ -403,7 +403,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		SysUser sysUser = baseMapper.selectOne(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getUsername, username));
 
 		if (Objects.nonNull(sysUser)) {
-			sysUser.setLockFlag(CommonConstants.STATUS_LOCK);
+			sysUser.setStatus(CommonConstants.STATUS_LOCK);
 			baseMapper.updateById(sysUser);
 		}
 		return R.ok();
