@@ -12,6 +12,7 @@ spring:
   data:
     redis:
       host: pig-redis
+      password: ${REDIS_PWD}
   # 数据库相关配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
