@@ -91,9 +91,9 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 				}
 
 				// 根据 randomStr 参数判断验证码是否正常
-				String code =  request.getQueryParams().getFirst("code");
-				String randomStr = StrUtil.blankToDefault(request.getQueryParams().getFirst("randomStr"),
-						request.getQueryParams().getFirst(SecurityConstants.SMS_PARAMETER_NAME));;
+				String code = requestBodyMap.get("code");
+				String randomStr = requestBodyMap.getOrDefault("randomStr",
+						requestBodyMap.get(SecurityConstants.SMS_PARAMETER_NAME));
 				checkCode(code, randomStr);
 
 				return chain.filter(exchange.mutate().request(serverHttpRequest).build());
