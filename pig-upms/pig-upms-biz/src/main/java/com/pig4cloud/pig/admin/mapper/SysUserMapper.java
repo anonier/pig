@@ -83,7 +83,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 			+ "<if test='phone != null'>"
 			+ "and phone = #{phone}"
 			+ "</if>"
+			+ "<if test='clientId != null'>"
+			+ "and client_id = #{clientId}"
+			+ "</if>"
 			+ "</script>")
 	@InterceptorIgnore(tenantLine = "true")
-	SysUser getByUsernameAndPhone(@Param("username") String username, @Param("phone") String phone);
+	SysUser getByUsernameAndPhone(@Param("username") String username, @Param("phone") String phone, @Param("clientId") String clientId);
 }

@@ -454,7 +454,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	public SysUser getOne(String username, String phone) {
-		return baseMapper.getByUsernameAndPhone(username,phone);
+	public SysUser getOne(String username, String phone, String clientId) {
+		return baseMapper.getByUsernameAndPhone(username,phone,clientId);
 	}
 }
