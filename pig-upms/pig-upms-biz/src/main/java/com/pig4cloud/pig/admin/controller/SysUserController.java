@@ -82,7 +82,7 @@ public class SysUserController {
 	@GetMapping(value = { "/info" })
 	public R info() {
 		String username = SecurityUtils.getUser().getUsername();
-		SysUser user = userService.getOne(Wrappers.<SysUser>query().lambda().eq(SysUser::getUsername, username));
+		SysUser user = userService.getOne(Wrappers.<SysUser>query().lambda().eq(SysUser::getUsername, username).eq(SysUser::getClientId, SecurityUtils.getUser().getClientId()));
 		if (user == null) {
 			return R.failed(MsgUtils.getMessage(ErrorCodes.SYS_USER_QUERY_ERROR));
 		}
