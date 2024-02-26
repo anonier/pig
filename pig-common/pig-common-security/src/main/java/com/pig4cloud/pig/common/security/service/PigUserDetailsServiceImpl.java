@@ -79,9 +79,9 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 	@Override
 	public UserDetails loadUserByUser(SysUser sysUser) {
 		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
-		if (cache != null && cache.get(sysUser.getClientId() + ":" + sysUser.getUsername()) != null) {
-			TenantContextHolder.setTenantId(((PigUser) cache.get(sysUser.getClientId() + ":" + sysUser.getUsername()).get()).getTenantId());
-			return (PigUser) cache.get(sysUser.getClientId() + ":" + sysUser.getUsername()).get();
+		if (cache != null && cache.get(sysUser.getUsername()) != null) {
+			TenantContextHolder.setTenantId(((PigUser) cache.get(sysUser.getUsername()).get()).getTenantId());
+			return (PigUser) cache.get(sysUser.getUsername()).get();
 		}
 
 		UserDTO userDTO = new UserDTO() {
@@ -97,7 +97,7 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
-			cache.put(sysUser.getClientId() + ":" + sysUser.getUsername(), userDetails);
+			cache.put(sysUser.getUsername(), userDetails);
 		}
 		TenantContextHolder.setTenantId(result.getData().getSysUser().getTenantId());
 		return userDetails;

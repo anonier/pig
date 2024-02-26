@@ -19,10 +19,10 @@
 
 package com.pig4cloud.pig.admin.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
+import com.pig4cloud.pig.admin.api.dto.UserInfo;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.vo.UserExcelVO;
 import com.pig4cloud.pig.admin.service.SysUserService;
@@ -49,6 +49,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
+ * 用户管理
  * @author lengleng
  * @date 2018/12/16
  */
@@ -67,8 +68,8 @@ public class SysUserController {
 	 */
 	@Inner
 	@GetMapping(value = { "/info/query" })
-	public R info(@RequestParam(required = false) String username, @RequestParam(required = false) String phone, @RequestParam(required = false) String clientId) {
-		SysUser user = userService.getOne(username,phone,clientId);
+	public R info(@RequestParam(required = false) String username, @RequestParam(required = false) String phone) {
+		SysUser user = userService.getOne(username,phone);
 		if (user == null) {
 			return R.failed(MsgUtils.getMessage(ErrorCodes.SYS_USER_USERINFO_EMPTY, username));
 		}
@@ -80,9 +81,9 @@ public class SysUserController {
 	 * @return 用户信息
 	 */
 	@GetMapping(value = { "/info" })
-	public R info() {
+	public R<UserInfo> info() {
 		String username = SecurityUtils.getUser().getUsername();
-		SysUser user = userService.getOne(Wrappers.<SysUser>query().lambda().eq(SysUser::getUsername, username).eq(SysUser::getClientId, SecurityUtils.getUser().getClientId()));
+		SysUser user = userService.getOne(Wrappers.<SysUser>query().lambda().eq(SysUser::getUsername, username));
 		if (user == null) {
 			return R.failed(MsgUtils.getMessage(ErrorCodes.SYS_USER_QUERY_ERROR));
 		}

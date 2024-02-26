@@ -138,5 +138,5 @@ public interface SysUserService extends IService<SysUser> {
 	 * @param phone
 	 * @return
 	 */
-	SysUser getOne(String username, String phone, String clientId);
+	SysUser getOne(String username, String phone);
 }
