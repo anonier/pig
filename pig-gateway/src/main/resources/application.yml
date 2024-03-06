@@ -11,11 +11,13 @@ spring:
       discovery:
 #        ip: 10.0.0.2
         server-addr: ${NACOS_HOST:pig-register}:${NACOS_PORT:8848}
+        namespace: @nacos.namespace@
         watch:
           enabled: true
         watch-delay: 1000
       config:
         server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: @nacos.namespace@
   config:
     import:
       - optional:nacos:application-@profiles.active@.yml

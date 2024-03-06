@@ -293,6 +293,7 @@
                 <profiles.active>dev</profiles.active>
                 <nacos.username>nacos</nacos.username>
                 <nacos.password>${env.NACOS_PWD}</nacos.password>
+				<nacos.namespace>${env.NACOS_NAMESPACE}</nacos.namespace>
             </properties>
             <activation>
                 <!-- 默认环境 -->
