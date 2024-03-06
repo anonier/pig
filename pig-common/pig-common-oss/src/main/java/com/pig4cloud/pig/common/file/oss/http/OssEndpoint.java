@@ -66,7 +66,7 @@ public class OssEndpoint {
 	 */
 	@SneakyThrows
 	@PostMapping("/bucket/{bucketName}")
-	public Bucket createBucker(@PathVariable String bucketName) {
+	public Bucket createBucket(@PathVariable String bucketName) {
 
 		template.createBucket(bucketName);
 		return template.getBucket(bucketName).get();
