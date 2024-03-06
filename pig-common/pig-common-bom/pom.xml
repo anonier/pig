@@ -55,7 +55,7 @@
 			<dependency>
 				<groupId>com.pig4cloud</groupId>
 				<artifactId>pig-common-api</artifactId>
-				<version>${pig.common.version}</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.redisson</groupId>
@@ -75,7 +75,7 @@
 			<dependency>
 				<groupId>com.pig4cloud</groupId>
 				<artifactId>pig-common-redisson</artifactId>
-				<version>${pig.common.version}</version>
+				<version>${revision}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.alibaba.fastjson2</groupId>
