@@ -42,38 +42,20 @@ public class PigFaceUserDetailsServiceImpl implements PigUserDetailsService {
 	private final RemoteUserService remoteUserService;
 	private final CacheManager cacheManager;
 
-	/**
-	 * 手机号登录
-	 * @param phone 手机号
-	 * @return
-	 */
 	@Override
 	@SneakyThrows
-	public UserDetails loadUserByUsername(String phone) {
-		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
-		if (cache != null && cache.get(phone) != null) {
-			return (PigUser) cache.get(phone).get();
-		}
-
-		UserDTO userDTO = new UserDTO();
-		userDTO.setPhone(phone);
-		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
-
-		UserDetails userDetails = getUserDetails(result);
-		if (cache != null) {
-			cache.put(phone, userDetails);
-		}
-		return userDetails;
+	public UserDetails loadUserByUsername(String username) {
+		return null;
 	}
 
 	/**
-	 * 手机号登入
+	 * 用户信息组装
 	 */
 	@Override
 	public UserDetails loadUserByUser(SysUser sysUser) {
 		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
-		if (cache != null && cache.get(sysUser.getPhone()) != null) {
-			return (PigUser) cache.get(sysUser.getPhone()).get();
+		if (cache != null && cache.get(sysUser.getUserId()) != null) {
+			return (PigUser) cache.get(sysUser.getUserId()).get();
 		}
 
 		UserDTO userDTO = new UserDTO();
@@ -89,6 +71,7 @@ public class PigFaceUserDetailsServiceImpl implements PigUserDetailsService {
 
 	/**
 	 * 是否支持此客户端校验
+	 *
 	 * @param clientId 目标客户端
 	 * @return true/false
 	 */
