@@ -20,6 +20,7 @@ import com.alibaba.cloud.sentinel.feign.SentinelFeignAutoConfiguration;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.RequestOriginParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pig4cloud.pig.common.feign.core.PigFeignRequestCloseInterceptor;
 import com.pig4cloud.pig.common.feign.sentinel.ext.PigSentinelFeign;
 import com.pig4cloud.pig.common.feign.sentinel.handle.PigUrlBlockHandler;
 import com.pig4cloud.pig.common.feign.sentinel.parser.PigHeaderRequestOriginParser;
@@ -62,6 +63,15 @@ public class PigFeignAutoConfiguration {
 	@ConditionalOnMissingBean
 	public RequestOriginParser requestOriginParser() {
 		return new PigHeaderRequestOriginParser();
+	}
+
+	/**
+	 * add http connection close header
+	 * @return
+	 */
+	@Bean
+	public PigFeignRequestCloseInterceptor pigFeignRequestCloseInterceptor() {
+		return new PigFeignRequestCloseInterceptor();
 	}
 
 }
