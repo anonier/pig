@@ -3,6 +3,7 @@ package com.pig4cloud.pig.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.pig4cloud.pig.admin.api.dto.LoginDto;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteApplyTokenService;
@@ -23,16 +24,19 @@ import org.springframework.util.LinkedMultiValueMap;
 @RefreshScope
 @AllArgsConstructor
 public class LoginMobileImpl implements LoginHandler {
-	private static final String clientId = "gc";
-	private static final String clientSecret = "gc";
+	private static final String clientId = "starlab";
+	private static final String clientSecret = "starlab";
 	private final RemoteApplyTokenService remoteApplyTokenService;
 	private final SysUserService sysUserService;
 
 	@Override
 	@SneakyThrows
 	public LoginDto login(LoginVo vo) {
-		SysUser sysUser = sysUserService.getOne(null, vo.getPhone());
-		if (ObjectUtil.isNotEmpty(sysUser)) {
+		SysUser sysUser = sysUserService.getOne(new LambdaQueryWrapper<SysUser>()
+				.eq(SysUser::getPhone, vo.getPhone())
+				.eq(SysUser::getDelFlag, 0)
+				.eq(SysUser::getLockFlag, 0));
+		if (ObjectUtil.isEmpty(sysUser)) {
 			log.error("未查询到该用户");
 			throw new RuntimeException("未查询到该用户");
 		}

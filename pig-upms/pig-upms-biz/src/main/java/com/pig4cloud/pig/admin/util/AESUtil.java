@@ -1,6 +1,6 @@
 package com.pig4cloud.pig.admin.util;
 
-import com.google.common.collect.ImmutableMap;
+import com.alibaba.nacos.shaded.com.google.common.collect.ImmutableMap;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Cipher;
@@ -11,9 +11,6 @@ import java.util.Map;
 
 /**
  * AES解密工具
- *
- * @author yb
- * @since 2021-6-28
  */
 public class AESUtil {
 

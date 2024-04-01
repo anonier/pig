@@ -3,6 +3,7 @@ package com.pig4cloud.pig.auth.support.core;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
+import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.WebUtils;
 import com.pig4cloud.pig.common.security.service.PigUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +66,7 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
 	@Override
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
-			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+												  UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 
 		// 只有密码模式需要校验密码
 		String grantType = WebUtils.getRequest().get().getParameter(OAuth2ParameterNames.GRANT_TYPE);
@@ -76,24 +77,23 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 		if (authentication.getCredentials() == null) {
 			this.logger.debug("Failed to authenticate since no credentials provided");
 			throw new BadCredentialsException(this.messages
-				.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+					.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 		}
 		String presentedPassword = authentication.getCredentials().toString();
 		if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
 			this.logger.debug("Failed to authenticate since password does not match stored value");
 			throw new BadCredentialsException(this.messages
-				.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+					.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 		}
 	}
 
 	@SneakyThrows
 	@Override
-
 	protected final UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
 		prepareTimingAttackProtection();
 		HttpServletRequest request = WebUtils.getRequest()
-			.orElseThrow(
-					(Supplier<Throwable>) () -> new InternalAuthenticationServiceException("web request is empty"));
+				.orElseThrow(
+						(Supplier<Throwable>) () -> new InternalAuthenticationServiceException("web request is empty"));
 
 		String grantType = WebUtils.getRequest().get().getParameter(OAuth2ParameterNames.GRANT_TYPE);
 		String clientId = WebUtils.getRequest().get().getParameter(OAuth2ParameterNames.CLIENT_ID);
@@ -103,26 +103,31 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 		}
 
 		Map<String, PigUserDetailsService> userDetailsServiceMap = SpringUtil
-			.getBeansOfType(PigUserDetailsService.class);
+				.getBeansOfType(PigUserDetailsService.class);
 
 		String finalClientId = clientId;
 		Optional<PigUserDetailsService> optional = userDetailsServiceMap.values()
-			.stream()
-			.filter(service -> service.support(finalClientId, grantType))
-			.max(Comparator.comparingInt(Ordered::getOrder));
+				.stream()
+				.filter(service -> service.support(finalClientId, grantType))
+				.max(Comparator.comparingInt(Ordered::getOrder));
 
 		if (optional.isEmpty()) {
 			throw new InternalAuthenticationServiceException("UserDetailsService error , not register");
 		}
 
 		try {
-			UserDetails loadedUser = optional.get().loadUserByUser(new SysUser() {
-				{
-					setClientId(finalClientId);
-					setUsername(username);
-					setPhone(username);
-				}
-			});
+			SysUser sysUser = new SysUser();
+			sysUser.setClientId(finalClientId);
+			if (grantType.equals(SecurityConstants.FACE)) {
+				sysUser.setUserId(Long.parseLong(username));
+			}
+			if (grantType.equals(SecurityConstants.USERNAME)) {
+				sysUser.setUsername(username);
+			}
+			if (grantType.equals(SecurityConstants.MOBILE)) {
+				sysUser.setPhone(username);
+			}
+			UserDetails loadedUser = optional.get().loadUserByUser(sysUser);
 			if (loadedUser == null) {
 				throw new InternalAuthenticationServiceException(
 						"UserDetailsService returned null, which is an interface contract violation");
@@ -143,7 +148,7 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
 	@Override
 	protected Authentication createSuccessAuthentication(Object principal, Authentication authentication,
-			UserDetails user) {
+														 UserDetails user) {
 		boolean upgradeEncoding = this.userDetailsPasswordService != null
 				&& this.passwordEncoder.upgradeEncoding(user.getPassword());
 		if (upgradeEncoding) {

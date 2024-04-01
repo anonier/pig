@@ -18,6 +18,12 @@
 package com.pig4cloud.pig.common.file.oss.service;
 
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.RandomUtil;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.OSSException;
+import com.aliyun.oss.common.auth.CredentialsProviderFactory;
+import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.auth.sts.AssumeRoleRequest;
 import com.aliyuncs.auth.sts.AssumeRoleResponse;
@@ -37,14 +43,17 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.core.FileTemplate;
+import com.pig4cloud.pig.common.file.oss.OssProperties;
 import lombok.Cleanup;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
@@ -57,14 +66,14 @@ import java.util.*;
  * @date 2020/5/23 6:36 上午
  * @since 1.0
  */
+@Slf4j
 @RequiredArgsConstructor
 public class OssTemplate implements InitializingBean, FileTemplate {
 
 	private final FileProperties properties;
-
 	private AmazonS3 amazonS3;
 
-	public AssumeRoleResponse getStsToken() {
+	public AssumeRoleResponse getStsToken(FileProperties fileProperties) {
 		// STS接入地址，例如sts.cn-hangzhou.aliyuncs.com。
 		// 从环境变量中获取步骤1生成的RAM用户的访问密钥（AccessKey ID和AccessKey Secret）。
 		// 从环境变量中获取步骤3生成的RAM角色的RamRoleArn。
@@ -73,31 +82,18 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 		// 以下Policy用于限制仅允许使用临时访问凭证向目标存储空间examplebucket下的src目录上传文件。
 		// 临时访问凭证最后获得的权限是步骤4设置的角色权限和该Policy设置权限的交集，即仅允许将文件上传至目标存储空间examplebucket下的src目录。
 		// 如果policy为空，则用户将获得该角色下所有权限。
-		String policy = "{\n" +
-				"    \"Version\": \"1\",\n" +
-				"    \"Statement\": [\n" +
-				"        {\n" +
-				"            \"Effect\": \"Allow\",\n" +
-				"            \"Action\": \"oss:PutObject\",\n" +
-				"            \"Resource\": [\n" +
-				"                \"acs:oss:*:*:" + properties.getOss().getBucket() + "/doctor/*\",\n" +
-				"                \"acs:oss:*:*:" + properties.getOss().getBucket() + "/patient/*\",\n" +
-				"                \"acs:oss:*:*:" + properties.getOss().getBucket() + "/institution/*\"\n" +
-				"            ]\n" +
-				"        }\n" +
-				"    ]\n" +
-				"}";
+		String policy = fileProperties.getOss().getPolicy();
 		// 设置临时访问凭证的有效时间为3600秒。
 		Long durationSeconds = 3600L;
 		try {
 			// regionId表示RAM的地域ID。以华东1（杭州）地域为例，regionID填写为cn-hangzhou。也可以保留默认值，默认值为空字符串（""）。
 			String regionId = "";
 			// 添加endpoint。适用于Java SDK 3.12.0及以上版本。
-			DefaultProfile.addEndpoint(regionId, "Sts", properties.getOss().getStsEndpoint());
+			DefaultProfile.addEndpoint(regionId, "Sts", fileProperties.getOss().getStsEndpoint());
 			// 添加endpoint。适用于Java SDK 3.12.0以下版本。
 			// DefaultProfile.addEndpoint("",regionId, "Sts", endpoint);
 			// 构造default profile。
-			IClientProfile profile = DefaultProfile.getProfile(regionId, properties.getOss().getAccessKey(), properties.getOss().getSecretKey());
+			IClientProfile profile = DefaultProfile.getProfile(regionId, fileProperties.getOss().getAccessKey(), fileProperties.getOss().getSecretKey());
 			// 构造client。
 			DefaultAcsClient client = new DefaultAcsClient(profile);
 			final AssumeRoleRequest request = new AssumeRoleRequest();
@@ -105,7 +101,7 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 			request.setSysMethod(MethodType.POST);
 			// 适用于Java SDK 3.12.0以下版本。
 			//request.setMethod(MethodType.POST);
-			request.setRoleArn(properties.getOss().getRoleArn());
+			request.setRoleArn(fileProperties.getOss().getRoleArn());
 			request.setRoleSessionName(roleSessionName);
 			request.setPolicy(policy);
 			request.setDurationSeconds(durationSeconds);
@@ -125,13 +121,62 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 		return null;
 	}
 
+	public URL uploadEncrypt(OssProperties ossProperties, MultipartFile file) {
+		// Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
+		String endpoint = ossProperties.getEndpoint();
+		// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+		DefaultCredentialProvider credentialsProvider;
+		try {
+			credentialsProvider = CredentialsProviderFactory.newDefaultCredentialProvider(ossProperties.getAccessKey(), ossProperties.getSecretKey());
+		} catch (Exception e) {
+			log.error("EnvironmentVariableCredentialsProvider异常" + e);
+			throw new RuntimeException("EnvironmentVariableCredentialsProvider异常", e);
+		}
+		// 填写Bucket名称，例如examplebucket。
+		String bucketName = ossProperties.getBucket();
+		// 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
+		String objectName = ossProperties.getPath() + "/" + RandomUtil.randomString(128) + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+		// 填写本地文件的完整路径，例如D:\\localpath\\examplefile.txt。
+		// 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件流。
+//        String filePath = "D:\\localpath\\examplefile.txt";
+
+		// 创建OSSClient实例。
+		OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
+
+		try {
+			byte[] byteArr = file.getBytes();
+			InputStream inputStream = new ByteArrayInputStream(byteArr);
+			// 创建PutObjectRequest对象。
+			com.aliyun.oss.model.PutObjectRequest putObjectRequest = new com.aliyun.oss.model.PutObjectRequest(bucketName, objectName, inputStream);
+			// 创建PutObject请求。
+			ossClient.putObject(putObjectRequest);
+			String key = objectName;
+			Date expiration = new Date(new Date().getTime() + 60 * 1000);
+			return ossClient.generatePresignedUrl(ossProperties.getBucket(), key, expiration);
+		} catch (OSSException oe) {
+			System.out.println("Caught an OSSException, which means your request made it to OSS, "
+					+ "but was rejected with an error response for some reason.");
+			System.out.println("Error Message:" + oe.getErrorMessage());
+			System.out.println("Error Code:" + oe.getErrorCode());
+			System.out.println("Request ID:" + oe.getRequestId());
+			System.out.println("Host ID:" + oe.getHostId());
+			throw new RuntimeException();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (ossClient != null) {
+				ossClient.shutdown();
+			}
+		}
+	}
+
 	/**
 	 * 文件上传封装
 	 *
 	 * @param file
 	 * @return
 	 */
-	public String upload(MultipartFile file) {
+	public String upload(MultipartFile file, FileProperties fileProperties) {
 		try {
 			String fileName = file.getOriginalFilename();
 			String prefix = fileName.substring(fileName.lastIndexOf("."));
@@ -139,9 +184,9 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 			try {
 				File tempFile = File.createTempFile(fileName, prefix);
 				file.transferTo(tempFile);
-				amazonS3.putObject(new PutObjectRequest(properties.getOss().getBucket(), "doctor/" + fileName, tempFile)
+				amazonS3.putObject(new PutObjectRequest(fileProperties.getOss().getBucket(), "doctor/" + fileName, tempFile)
 						.withCannedAcl(CannedAccessControlList.PublicRead));
-				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(properties.getOss().getBucket(), fileName);
+				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(fileProperties.getOss().getBucket(), fileName);
 				URL url = amazonS3.generatePresignedUrl(urlRequest);
 				return url.toString();
 			} catch (Exception e) {
@@ -278,7 +323,7 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 	 * API Documentation</a>
 	 */
 	public PutObjectResult putObject(String bucketName, String objectName, InputStream stream, long size,
-			String contextType) throws Exception {
+									 String contextType) throws Exception {
 		// String fileName = getFileName(objectName);
 		byte[] bytes = IOUtils.toByteArray(stream);
 		ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -327,12 +372,12 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 				properties.getOss().getSecretKey());
 		AWSCredentialsProvider awsCredentialsProvider = new AWSStaticCredentialsProvider(awsCredentials);
 		this.amazonS3 = AmazonS3Client.builder()
-			.withEndpointConfiguration(endpointConfiguration)
-			.withClientConfiguration(clientConfiguration)
-			.withCredentials(awsCredentialsProvider)
-			.disableChunkedEncoding()
-			.withPathStyleAccessEnabled(properties.getOss().getPathStyleAccess())
-			.build();
+				.withEndpointConfiguration(endpointConfiguration)
+				.withClientConfiguration(clientConfiguration)
+				.withCredentials(awsCredentialsProvider)
+				.disableChunkedEncoding()
+				.withPathStyleAccessEnabled(properties.getOss().getPathStyleAccess())
+				.build();
 	}
 
 }

@@ -20,6 +20,8 @@ import com.pig4cloud.pig.auth.support.CustomeOAuth2AccessTokenGenerator;
 import com.pig4cloud.pig.auth.support.core.CustomeOAuth2TokenCustomizer;
 import com.pig4cloud.pig.auth.support.core.FormIdentityLoginConfigurer;
 import com.pig4cloud.pig.auth.support.core.PigDaoAuthenticationProvider;
+import com.pig4cloud.pig.auth.support.face.OAuth2ResourceOwnerFaceAuthenticationConverter;
+import com.pig4cloud.pig.auth.support.face.OAuth2ResourceOwnerFaceAuthenticationProvider;
 import com.pig4cloud.pig.auth.support.handler.PigAuthenticationFailureEventHandler;
 import com.pig4cloud.pig.auth.support.handler.PigAuthenticationSuccessEventHandler;
 import com.pig4cloud.pig.auth.support.password.OAuth2ResourceOwnerPasswordAuthenticationConverter;
@@ -67,27 +69,27 @@ public class AuthorizationServerConfiguration {
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
 		http.with(authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {// 个性化认证授权端点
-			tokenEndpoint.accessTokenRequestConverter(accessTokenRequestConverter()) // 注入自定义的授权认证Converter
-				.accessTokenResponseHandler(new PigAuthenticationSuccessEventHandler()) // 登录成功处理器
-				.errorResponseHandler(new PigAuthenticationFailureEventHandler());// 登录失败处理器
-		}).clientAuthentication(oAuth2ClientAuthenticationConfigurer -> // 个性化客户端认证
-		oAuth2ClientAuthenticationConfigurer.errorResponseHandler(new PigAuthenticationFailureEventHandler()))// 处理客户端认证异常
-			.authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint// 授权码端点个性化confirm页面
-				.consentPage(SecurityConstants.CUSTOM_CONSENT_PAGE_URI)), Customizer.withDefaults());
+					tokenEndpoint.accessTokenRequestConverter(accessTokenRequestConverter()) // 注入自定义的授权认证Converter
+							.accessTokenResponseHandler(new PigAuthenticationSuccessEventHandler()) // 登录成功处理器
+							.errorResponseHandler(new PigAuthenticationFailureEventHandler());// 登录失败处理器
+				}).clientAuthentication(oAuth2ClientAuthenticationConfigurer -> // 个性化客户端认证
+						oAuth2ClientAuthenticationConfigurer.errorResponseHandler(new PigAuthenticationFailureEventHandler()))// 处理客户端认证异常
+				.authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint// 授权码端点个性化confirm页面
+						.consentPage(SecurityConstants.CUSTOM_CONSENT_PAGE_URI)), Customizer.withDefaults());
 
 		AntPathRequestMatcher[] requestMatchers = new AntPathRequestMatcher[] {
 				AntPathRequestMatcher.antMatcher("/token/**"), AntPathRequestMatcher.antMatcher("/actuator/**"),
 				AntPathRequestMatcher.antMatcher("/css/**"), AntPathRequestMatcher.antMatcher("/error") };
 
 		http.authorizeHttpRequests(authorizeRequests -> {
-			// 自定义接口、端点暴露
-			authorizeRequests.requestMatchers(requestMatchers).permitAll();
-			authorizeRequests.anyRequest().authenticated();
-		})
-			.with(authorizationServerConfigurer.authorizationService(authorizationService)// redis存储token的实现
-				.authorizationServerSettings(
-						AuthorizationServerSettings.builder().issuer(SecurityConstants.PROJECT_LICENSE).build()),
-					Customizer.withDefaults());
+					// 自定义接口、端点暴露
+					authorizeRequests.requestMatchers(requestMatchers).permitAll();
+					authorizeRequests.anyRequest().authenticated();
+				})
+				.with(authorizationServerConfigurer.authorizationService(authorizationService)// redis存储token的实现
+								.authorizationServerSettings(
+										AuthorizationServerSettings.builder().issuer(SecurityConstants.PROJECT_LICENSE).build()),
+						Customizer.withDefaults());
 		http.with(new FormIdentityLoginConfigurer(), Customizer.withDefaults());
 		DefaultSecurityFilterChain securityFilterChain = http.build();
 
@@ -116,7 +118,9 @@ public class AuthorizationServerConfiguration {
 	private AuthenticationConverter accessTokenRequestConverter() {
 		return new DelegatingAuthenticationConverter(Arrays.asList(
 				new OAuth2ResourceOwnerPasswordAuthenticationConverter(),
-				new OAuth2ResourceOwnerSmsAuthenticationConverter(), new OAuth2RefreshTokenAuthenticationConverter(),
+				new OAuth2ResourceOwnerSmsAuthenticationConverter(),
+				new OAuth2RefreshTokenAuthenticationConverter(),
+				new OAuth2ResourceOwnerFaceAuthenticationConverter(),
 				new OAuth2ClientCredentialsAuthenticationConverter(),
 				new OAuth2AuthorizationCodeAuthenticationConverter(),
 				new OAuth2AuthorizationCodeRequestAuthenticationConverter()));
@@ -140,12 +144,17 @@ public class AuthorizationServerConfiguration {
 		OAuth2ResourceOwnerSmsAuthenticationProvider resourceOwnerSmsAuthenticationProvider = new OAuth2ResourceOwnerSmsAuthenticationProvider(
 				authenticationManager, authorizationService, oAuth2TokenGenerator());
 
+		OAuth2ResourceOwnerFaceAuthenticationProvider resourceOwnerFaceAuthenticationProvider = new OAuth2ResourceOwnerFaceAuthenticationProvider(
+				authenticationManager, authorizationService, oAuth2TokenGenerator());
+
 		// 处理 UsernamePasswordAuthenticationToken
 		http.authenticationProvider(new PigDaoAuthenticationProvider());
 		// 处理 OAuth2ResourceOwnerPasswordAuthenticationToken
 		http.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
 		// 处理 OAuth2ResourceOwnerSmsAuthenticationToken
 		http.authenticationProvider(resourceOwnerSmsAuthenticationProvider);
+		// 处理 OAuth2ResourceOwnerSmsAuthenticationToken
+		http.authenticationProvider(resourceOwnerFaceAuthenticationProvider);
 	}
 
 }

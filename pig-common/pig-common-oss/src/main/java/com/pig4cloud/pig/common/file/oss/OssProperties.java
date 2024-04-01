@@ -91,4 +91,65 @@ public class OssProperties {
 	 * bucket
 	 */
 	private String bucket;
+
+	/**
+	 * policy
+	 */
+	private String policy;
+
+	/**********************************************************************************************************************
+	 /**
+	 * stsUrl
+	 */
+	private String hzStsEndpoint;
+
+	/**
+	 * stsUrl
+	 */
+	private String shStsEndpoint;
+
+	/**
+	 * 杭州assess角色
+	 */
+	private String hzAssessRoleArn;
+
+	/**
+	 * 上海face目录角色
+	 */
+	private String shFaceRoleArn;
+
+	/**
+	 * bucket
+	 */
+	private String hzBucket;
+
+	/**
+	 * bucket
+	 */
+	private String shBucket;
+
+	/**
+	 * hz endpoint
+	 */
+	private String hzEndpoint;
+
+	/**
+	 * sh endpoint
+	 */
+	private String shEndpoint;
+
+	/**
+	 * hz Policy
+	 */
+	private String hzAssessPolicy;
+
+	/**
+	 * sh Policy
+	 */
+	private String shFacePolicy;
+
+	/**
+	 * 上传路径
+	 */
+	private String path;
 }

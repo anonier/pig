@@ -68,6 +68,11 @@ public interface SecurityConstants {
 	String MOBILE = "mobile";
 
 	/**
+	 * 人脸登录
+	 */
+	String FACE = "face";
+
+	/**
 	 * {bcrypt} 加密的特征码
 	 */
 	String BCRYPT = "{bcrypt}";
@@ -121,6 +126,11 @@ public interface SecurityConstants {
 	 * 短信登录 参数名称
 	 */
 	String SMS_PARAMETER_NAME = "mobile";
+
+	/**
+	 * 人脸登录 参数名称
+	 */
+	String FACE_PARAMETER_NAME = "userId";
 
 	/**
 	 * 授权码模式confirm

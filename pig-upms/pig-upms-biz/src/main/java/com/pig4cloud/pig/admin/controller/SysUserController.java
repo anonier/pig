@@ -19,6 +19,9 @@
 
 package com.pig4cloud.pig.admin.controller;
 
+import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
@@ -47,9 +50,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 用户管理
+ *
  * @author lengleng
  * @date 2018/12/16
  */
@@ -64,23 +69,30 @@ public class SysUserController {
 
 	/**
 	 * 获取指定用户全部信息
+	 *
 	 * @return 用户信息
 	 */
 	@Inner
-	@GetMapping(value = { "/info/query" })
-	public R info(@RequestParam(required = false) String username, @RequestParam(required = false) String phone) {
-		SysUser user = userService.getOne(username,phone);
-		if (user == null) {
-			return R.failed(MsgUtils.getMessage(ErrorCodes.SYS_USER_USERINFO_EMPTY, username));
+	@GetMapping(value = {"/info/query"})
+	public R info(@ParameterObject UserDTO dto) {
+		SysUser sysUser = userService.getOne(new LambdaQueryWrapper<SysUser>()
+				.eq(StrUtil.isNotBlank(dto.getUsername()), SysUser::getUsername, dto.getUsername())
+				.eq(StrUtil.isNotBlank(dto.getPhone()), SysUser::getPhone, dto.getPhone())
+				.eq(ObjUtil.isNotNull(dto.getUserId()), SysUser::getUserId, dto.getUserId())
+				.eq(SysUser::getDelFlag, 0)
+				.eq(SysUser::getLockFlag, 0));
+		if (sysUser == null) {
+			return R.failed(MsgUtils.getMessage(ErrorCodes.SYS_USER_USERINFO_EMPTY));
 		}
-		return R.ok(userService.findUserInfo(user));
+		return R.ok(userService.findUserInfo(sysUser));
 	}
 
 	/**
 	 * 获取当前用户全部信息
+	 *
 	 * @return 用户信息
 	 */
-	@GetMapping(value = { "/info" })
+	@GetMapping(value = {"/info"})
 	public R<UserInfo> info() {
 		String username = SecurityUtils.getUser().getUsername();
 		SysUser user = userService.getOne(Wrappers.<SysUser>query().lambda().eq(SysUser::getUsername, username));
@@ -92,6 +104,7 @@ public class SysUserController {
 
 	/**
 	 * 通过ID查询用户信息
+	 *
 	 * @param id ID
 	 * @return 用户信息
 	 */
@@ -102,6 +115,7 @@ public class SysUserController {
 
 	/**
 	 * 查询用户信息
+	 *
 	 * @param query 查询条件
 	 * @return 不为空返回用户名
 	 */
@@ -114,19 +128,20 @@ public class SysUserController {
 
 	/**
 	 * 删除用户信息
-	 * @param ids ID
+	 *
 	 * @return R
 	 */
 	@SysLog("删除用户信息")
 	@DeleteMapping
 	@PreAuthorize("@pms.hasPermission('sys_user_del')")
 	@Operation(summary = "删除用户", description = "根据ID删除用户")
-	public R userDel(@RequestBody Long[] ids) {
+	public R userDel(@RequestParam Long[] ids) {
 		return R.ok(userService.deleteUserByIds(ids));
 	}
 
 	/**
 	 * 添加用户
+	 *
 	 * @param userDto 用户信息
 	 * @return success/false
 	 */
@@ -139,6 +154,7 @@ public class SysUserController {
 
 	/**
 	 * 更新用户信息
+	 *
 	 * @param userDto 用户信息
 	 * @return R
 	 */
@@ -151,7 +167,8 @@ public class SysUserController {
 
 	/**
 	 * 分页查询用户
-	 * @param page 参数集
+	 *
+	 * @param page    参数集
 	 * @param userDTO 查询参数列表
 	 * @return 用户集合
 	 */
@@ -162,6 +179,7 @@ public class SysUserController {
 
 	/**
 	 * 修改个人信息
+	 *
 	 * @param userDto userDto
 	 * @return success/false
 	 */
@@ -173,6 +191,7 @@ public class SysUserController {
 
 	/**
 	 * 导出excel 表格
+	 *
 	 * @param userDTO 查询条件
 	 * @return
 	 */
@@ -185,7 +204,8 @@ public class SysUserController {
 
 	/**
 	 * 导入用户
-	 * @param excelVOList 用户列表
+	 *
+	 * @param excelVOList   用户列表
 	 * @param bindingResult 错误信息列表
 	 * @return R
 	 */
@@ -197,6 +217,7 @@ public class SysUserController {
 
 	/**
 	 * 锁定指定用户
+	 *
 	 * @param username 用户名
 	 * @return R
 	 */
@@ -204,6 +225,26 @@ public class SysUserController {
 	@PutMapping("/lock/{username}")
 	public R lockUser(@PathVariable String username) {
 		return userService.lockUser(username);
+	}
+
+	/**
+	 * 用户启用关闭
+	 *
+	 * @return R
+	 */
+	@PutMapping("/lockFlag")
+	public R lockFlag(@RequestParam Long id, @RequestParam String lockFlag) {
+		SysUser sysUser = userService.getById(id);
+
+		if (Objects.nonNull(sysUser)) {
+			userService.updateById(new SysUser() {
+				{
+					setUserId(id);
+					setLockFlag(lockFlag);
+				}
+			});
+		}
+		return R.ok();
 	}
 
 	@PutMapping("/password")

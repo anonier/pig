@@ -28,7 +28,6 @@ import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -41,6 +40,7 @@ import java.util.List;
  * @since 2017-10-29
  */
 @Mapper
+@InterceptorIgnore(tenantLine = "true")
 public interface SysUserMapper extends BaseMapper<SysUser> {
 
 	/**
@@ -54,7 +54,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * 分页查询用户信息（含角色）
 	 * @param page 分页
 	 * @param userDTO 查询参数
-	 * @param dataScope
 	 * @return list
 	 */
 	IPage<UserVO> getUserVosPage(Page page, @Param("query") UserDTO userDTO);
@@ -69,21 +68,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	/**
 	 * 查询用户列表
 	 * @param userDTO 查询条件
-	 * @param dataScope 数据权限声明
 	 * @return
 	 */
 	List<UserVO> selectVoList(@Param("query") UserDTO userDTO);
-
-	@Select("<script>"
-			+ "SELECT * from sys_user "
-			+ "WHERE 1=1 "
-			+ "<if test='username != null'>"
-			+ "and username = #{username}"
-			+ "</if>"
-			+ "<if test='phone != null'>"
-			+ "and phone = #{phone}"
-			+ "</if>"
-			+ "</script>")
-	@InterceptorIgnore(tenantLine = "true")
-	SysUser getByUsernameAndPhone(@Param("username") String username, @Param("phone") String phone);
 }

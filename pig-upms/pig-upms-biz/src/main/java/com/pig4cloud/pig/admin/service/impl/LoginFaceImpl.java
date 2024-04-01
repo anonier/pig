@@ -3,57 +3,68 @@ package com.pig4cloud.pig.admin.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.pig4cloud.pig.admin.api.dto.LoginDto;
-import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteApplyTokenService;
+import com.pig4cloud.pig.admin.api.vo.FaceItemsVo;
 import com.pig4cloud.pig.admin.api.vo.LoginVo;
 import com.pig4cloud.pig.admin.enums.EnumAuth;
+import com.pig4cloud.pig.admin.service.IFaceService;
 import com.pig4cloud.pig.admin.service.LoginHandler;
-import com.pig4cloud.pig.admin.service.SysUserService;
 import com.pig4cloud.pig.admin.util.Base64Util;
-import com.pig4cloud.pig.common.core.constant.SecurityConstants;
-import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.common.file.core.FileProperties;
+import com.pig4cloud.pig.common.file.oss.OssProperties;
+import com.pig4cloud.pig.common.file.oss.service.OssTemplate;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.net.URL;
+
 @Slf4j
-@Service("login_username")
+@Service("login_face")
 @RefreshScope
 @AllArgsConstructor
-public class LoginUsernameImpl implements LoginHandler {
+public class LoginFaceImpl implements LoginHandler {
 	private static final String clientId = "starlab";
 	private static final String clientSecret = "starlab";
 	private final RemoteApplyTokenService remoteApplyTokenService;
-	private final SysUserService sysUserService;
+	private final OssTemplate ossTemplate;
+	private final FileProperties fileProperties;
+	private final IFaceService iFaceService;
 
 	@Override
+	@SneakyThrows
 	public LoginDto login(LoginVo vo) {
-		SysUser sysUser = sysUserService.getOne(new LambdaQueryWrapper<SysUser>()
-				.eq(SysUser::getUsername, vo.getUsername())
-				.eq(SysUser::getDelFlag, 0)
-				.eq(SysUser::getLockFlag, 0));
-		if (ObjectUtil.isEmpty(sysUser)) {
-			log.error("未查询到该用户");
-			throw new RuntimeException("未查询到该用户");
+		URL url = ossTemplate.uploadEncrypt(new OssProperties() {
+			{
+				setAccessKey(fileProperties.getOss().getAccessKey());
+				setSecretKey(fileProperties.getOss().getSecretKey());
+				setEndpoint(fileProperties.getOss().getShEndpoint());
+				setBucket(fileProperties.getOss().getShBucket());
+				setPath("face");
+			}
+		}, vo.getFile());
+
+		FaceItemsVo faceItemsVo = iFaceService.searchFace(fileProperties.getVisual().getDbName(), String.valueOf(url));
+		if (ObjectUtil.isEmpty(vo)) {
+			log.error("未查到改该人脸用户");
+			throw new RuntimeException("未查到改该人脸用户");
 		}
-		return getToken(sysUser.getUsername(), vo.getPassword());
+		return getToken(faceItemsVo.getEntityId());
 	}
 
 	/**
 	 * 获取token
 	 *
-	 * @param username 账号
-	 * @param password 密码
+	 * @param userId 用户id
 	 */
-	private LoginDto getToken(String username, String password) {
+	private LoginDto getToken(Long userId) {
 		LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-		body.add(EnumAuth.GRANT_TYPE.getDesc(), EnumAuth.PASSWORD.getDesc());
-		body.add(EnumAuth.USERNAME.getDesc(), username);
-		body.add(EnumAuth.PASSWORD.getDesc(), password);
+		body.add(EnumAuth.GRANT_TYPE.getDesc(), EnumAuth.FACE.getDesc());
+		body.add(EnumAuth.USERID.getDesc(), String.valueOf(userId));
 		String Authorization = Base64Util.getHttpBasic(clientId, clientSecret);
 		JSONObject object = remoteApplyTokenService.applyToken(body, Authorization);
 		LoginDto result = BeanUtil.copyProperties(object, LoginDto.class, "user_info");

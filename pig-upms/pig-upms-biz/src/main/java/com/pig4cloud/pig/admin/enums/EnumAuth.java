@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author yb
- * @since 2021-6-28
+ * 鉴权枚举
  */
 @Getter
 @AllArgsConstructor
@@ -13,7 +12,11 @@ public enum EnumAuth {
 
 	USERNAME("username"),
 
+	USERID("userId"),
+
 	PASSWORD("password"),
+
+	FACE("face"),
 
 	MOBILE("mobile"),
 

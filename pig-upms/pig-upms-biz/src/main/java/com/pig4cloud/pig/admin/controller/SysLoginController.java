@@ -67,6 +67,7 @@ public class SysLoginController {
 		return R.ok(loginService.login(new LoginVo() {
 			{
 				setType("mobile");
+				setPhone(vo.getPhone());
 				setPassword(vo.getPassword());
 			}
 		}));
@@ -82,6 +83,7 @@ public class SysLoginController {
 		return R.ok(loginService.login(new LoginVo() {
 			{
 				setType("sms");
+				setPhone(vo.getPhone());
 				setCode(vo.getCode());
 			}
 		}));
@@ -97,7 +99,8 @@ public class SysLoginController {
 		return R.ok(loginService.login(new LoginVo() {
 			{
 				setType("username");
-				setCode(vo.getPassword());
+				setUsername(vo.getUsername());
+				setPassword(vo.getPassword());
 			}
 		}));
 	}
