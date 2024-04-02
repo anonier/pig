@@ -93,4 +93,8 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 		return new MybatisPlusMetaObjectHandler();
 	}
 
+	@Bean
+	public MySqlInjector sqlInjector() {
+		return new MySqlInjector();
+	}
 }
