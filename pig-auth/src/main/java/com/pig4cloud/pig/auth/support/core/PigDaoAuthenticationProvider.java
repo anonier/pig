@@ -121,7 +121,7 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 			if (grantType.equals(SecurityConstants.FACE)) {
 				sysUser.setUserId(Long.parseLong(username));
 			}
-			if (grantType.equals(SecurityConstants.USERNAME)) {
+			if (grantType.equals(SecurityConstants.PASSWORD)) {
 				sysUser.setUsername(username);
 			}
 			if (grantType.equals(SecurityConstants.MOBILE)) {
