@@ -23,6 +23,8 @@ import cn.hutool.crypto.Padding;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.http.HttpUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.gateway.config.GatewayConfigProperties;
 import lombok.RequiredArgsConstructor;
@@ -64,19 +66,22 @@ public class PasswordDecoderFilter extends AbstractGatewayFilterFactory {
 		return (exchange, chain) -> {
 			ServerHttpRequest request = exchange.getRequest();
 			// 不是登录请求，直接向下执行
-			if (!StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), SecurityConstants.OAUTH_TOKEN_URL)) {
+			if (!StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), SecurityConstants.OAUTH_TOKEN_URL)
+					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/username")
+					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/mobile")) {
 				return chain.filter(exchange);
 			}
 
 			return modifyRequestBodyFilter
-				.apply(new ModifyRequestBodyGatewayFilterFactory.Config().setRewriteFunction(String.class, String.class,
-						(webExchange, body) -> Mono.just(modifyRequestPassword(body))))
-				.filter(exchange, chain);
+					.apply(new ModifyRequestBodyGatewayFilterFactory.Config().setRewriteFunction(String.class, String.class,
+							(webExchange, body) -> Mono.just(modifyRequestPassword(body))))
+					.filter(exchange, chain);
 		};
 	}
 
 	/**
 	 * 修改请求报文的密码密文为名为
+	 *
 	 * @param requestBody 请求报文
 	 * @return 修改后的报文
 	 */
@@ -86,15 +91,22 @@ public class PasswordDecoderFilter extends AbstractGatewayFilterFactory {
 				new SecretKeySpec(gatewayConfig.getEncodeKey().getBytes(), KEY_ALGORITHM),
 				new IvParameterSpec(gatewayConfig.getEncodeKey().getBytes()));
 
-		// 获取请求密码并解密
-		Map<String, String> inParamsMap = HttpUtil.decodeParamMap(requestBody, CharsetUtil.CHARSET_UTF_8);
-		if (inParamsMap.containsKey(PASSWORD)) {
-			String password = aes.decryptStr(inParamsMap.get(PASSWORD));
-			// 返回修改后报文字符
-			inParamsMap.put(PASSWORD, password);
+		if ("application/json".equals(HttpUtil.getContentTypeByRequestBody(requestBody))) {
+			JSONObject obj = JSONObject.parseObject(requestBody);
+			if (obj.containsKey(PASSWORD)) {
+				obj.put(PASSWORD, aes.decryptStr(String.valueOf(obj.get(PASSWORD))));
+			}
+			return JSON.toJSONString(obj);
+		} else {
+			Map<String, String> inParamsMap = HttpUtil.decodeParamMap(requestBody, CharsetUtil.CHARSET_UTF_8);
+			// 获取请求密码并解密
+			if (inParamsMap.containsKey(PASSWORD)) {
+				String password = aes.decryptStr(inParamsMap.get(PASSWORD));
+				// 返回修改后报文字符
+				inParamsMap.put(PASSWORD, password);
+			}
+
+			return HttpUtil.toParams(inParamsMap, Charset.defaultCharset(), true);
 		}
-
-		return HttpUtil.toParams(inParamsMap, Charset.defaultCharset(), true);
 	}
-
 }

@@ -30,6 +30,10 @@
     <description>pig 服务网关，基于 spring cloud gateway</description>
 
     <dependencies>
+		<dependency>
+			<groupId>com.alibaba.fastjson2</groupId>
+			<artifactId>fastjson2</artifactId>
+		</dependency>
         <!--gateway 网关依赖,内置webflux 依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
