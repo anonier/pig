@@ -21,7 +21,7 @@ import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson2.JSONObject;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.exception.ValidateCodeException;
@@ -58,6 +58,7 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 
 	/**
 	 * 应用网关过滤器
+	 *
 	 * @param config 配置对象
 	 * @return 网关过滤器
 	 */
@@ -67,7 +68,9 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 		return (exchange, chain) -> {
 			ServerHttpRequest request = exchange.getRequest();
 			// 不是登录请求，直接向下执行
-			if (!StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), SecurityConstants.OAUTH_TOKEN_URL)) {
+			if (!StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), SecurityConstants.OAUTH_TOKEN_URL)
+					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/username")
+					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/mobile")) {
 				return chain.filter(exchange);
 			}
 
@@ -82,9 +85,15 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 				// get cacheRequestBody
 				DataBuffer cachedRequestBody = exchange.getAttribute("cachedRequestBody");
 				CharBuffer charBuffer = StandardCharsets.UTF_8
-					.decode(Objects.requireNonNull(cachedRequestBody).asByteBuffer());
-				Map<String, String> requestBodyMap = HttpUtil.decodeParamMap(charBuffer.toString(),
-						CharsetUtil.CHARSET_UTF_8);
+						.decode(Objects.requireNonNull(cachedRequestBody).asByteBuffer());
+
+				Map<String, String> requestBodyMap;
+				if ("application/json".equals(HttpUtil.getContentTypeByRequestBody(charBuffer.toString()))) {
+					requestBodyMap = JSONObject.parseObject((charBuffer.toString()), Map.class);
+				} else {
+					requestBodyMap = HttpUtil.decodeParamMap(charBuffer.toString(),
+							CharsetUtil.CHARSET_UTF_8);
+				}
 				// 刷新请求跳过，直接向下执行
 				if (StrUtil.equals(SecurityConstants.REFRESH_TOKEN, requestBodyMap.get("grant_type"))) {
 					return chain.filter(exchange.mutate().request(serverHttpRequest).build());
@@ -103,7 +112,8 @@ public class ValidateCodeGatewayFilter extends AbstractGatewayFilterFactory<Obje
 
 	/**
 	 * 检查验证码，错误扔出 ValidateCodeException GlobalExceptionHandler统一处理
-	 * @param code 验证码
+	 *
+	 * @param code      验证码
 	 * @param randomStr 请求参数
 	 * @throws ValidateCodeException 验证码异常
 	 */
