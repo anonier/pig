@@ -67,7 +67,8 @@ public class PasswordDecoderFilter extends AbstractGatewayFilterFactory {
 			ServerHttpRequest request = exchange.getRequest();
 			// 不是登录请求，直接向下执行
 			if (!StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), SecurityConstants.OAUTH_TOKEN_URL)
-					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/")) {
+					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/username")
+					&& !StrUtil.containsAnyIgnoreCase(request.getURI().getPath(), "/login/mobile")) {
 				return chain.filter(exchange);
 			}
 
