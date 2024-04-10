@@ -24,64 +24,64 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>pig-gateway</artifactId>
+    <artifactId>pig-boot</artifactId>
     <packaging>jar</packaging>
 
-    <description>pig 服务网关，基于 spring cloud gateway</description>
+    <description>pig 单体版本启动</description>
 
     <dependencies>
-		<dependency>
-			<groupId>com.alibaba.fastjson2</groupId>
-			<artifactId>fastjson2</artifactId>
-		</dependency>
-        <!--gateway 网关依赖,内置webflux 依赖-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
-        </dependency>
-        <!--注册中心客户端-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
-        <!--配置中心客户端-->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-        </dependency>
-        <!-- LB 扩展 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
-        <!--caffeine 替换LB 默认缓存实现-->
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-        </dependency>
-        <!-- 工具包依赖 -->
+        <!--必备：认证中心模块-->
         <dependency>
             <groupId>com.pig4cloud</groupId>
-            <artifactId>pig-common-core</artifactId>
+            <artifactId>pig-auth</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--必备：用户管理模块-->
+        <dependency>
+            <groupId>com.pig4cloud</groupId>
+            <artifactId>pig-upms-biz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--可选：代码生成模块-->
+        <dependency>
+            <groupId>com.pig4cloud</groupId>
+            <artifactId>pig-codegen</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--可选：定时任务模块-->
+        <dependency>
+            <groupId>com.pig4cloud</groupId>
+            <artifactId>pig-quartz</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <!--安全模块-->
+        <dependency>
+            <groupId>com.pig4cloud</groupId>
+            <artifactId>pig-common-security</artifactId>
+        </dependency>
+        <!-- 接口文档UI  -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springboot</groupId>
+            <artifactId>knife4j-boot-openapi3-ui</artifactId>
+            <version>${knife4j.version}</version>
         </dependency>
         <!--接口文档-->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
+            <groupId>com.pig4cloud</groupId>
+            <artifactId>pig-common-swagger</artifactId>
         </dependency>
-        <!--引入Knife4j的官方ui包-->
+        <!--undertow容器-->
         <dependency>
-            <groupId>io.springboot</groupId>
-            <artifactId>knife4j-openapi3-ui</artifactId>
-            <version>${knife4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-crypto</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
     </dependencies>
 
@@ -97,5 +97,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

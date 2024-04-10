@@ -85,8 +85,11 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 				if (attributes == null) {
 					continue;
 				}
+
+				// 如果是单体项目自动注入 & url 为空
+				Boolean isMicro = environment.getProperty("spring.cloud.nacos.discovery.enabled", Boolean.class, true);
 				// 如果已经存在该 bean，支持原生的 Feign
-				if (registry.containsBeanDefinition(className)) {
+				if (registry.containsBeanDefinition(className) && isMicro) {
 					continue;
 				}
 
@@ -95,8 +98,8 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 
 				validate(attributes);
 				BeanDefinitionBuilder definition = BeanDefinitionBuilder
-					.genericBeanDefinition(FeignClientFactoryBean.class);
-				definition.addPropertyValue("url", getUrl(attributes));
+						.genericBeanDefinition(FeignClientFactoryBean.class);
+				definition.addPropertyValue("url", getUrl(registry, attributes));
 				definition.addPropertyValue("path", getPath(attributes));
 				String name = getName(attributes);
 				definition.addPropertyValue("name", name);
@@ -107,8 +110,7 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 					String contextId = getContextId(attributes);
 					aliasBuilder.append(contextId);
 					definition.addPropertyValue("contextId", contextId);
-				}
-				else {
+				} else {
 					aliasBuilder.append(name);
 				}
 
@@ -139,11 +141,10 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 				}
 
 				BeanDefinitionHolder holder = new BeanDefinitionHolder(beanDefinition, className,
-						new String[] { alias });
+						new String[]{alias});
 				BeanDefinitionReaderUtils.registerBeanDefinition(holder, registry);
 
-			}
-			catch (ClassNotFoundException e) {
+			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
@@ -152,6 +153,7 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 	/**
 	 * Return the class used by {@link SpringFactoriesLoader} to load configuration
 	 * candidates.
+	 *
 	 * @return the factory class
 	 */
 	private Class<?> getSpringFactoriesLoaderFactoryClass() {
@@ -194,14 +196,16 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 		return value;
 	}
 
-	private String getUrl(Map<String, Object> attributes) {
+	private String getUrl(BeanDefinitionRegistry registry, Map<String, Object> attributes) {
+
 		// 如果是单体项目自动注入 & url 为空
-		String url = (String) attributes.get("url");
-		boolean present = ClassUtils.isPresent("com.alibaba.cloud.nacos.discovery.NacosDiscoveryClient",
-				this.getClass().getClassLoader());
-		if (!StringUtils.hasText(url) && !present) {
-			url = resolve(BASE_URL);
+		Boolean isMicro = environment.getProperty("spring.cloud.nacos.discovery.enabled", Boolean.class, true);
+
+		if (isMicro) {
+			return null;
 		}
+
+		String url = resolve(BASE_URL);
 
 		return FeignClientsRegistrar.getUrl(url);
 	}
@@ -255,7 +259,7 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 	}
 
 	private void registerClientConfiguration(BeanDefinitionRegistry registry, Object name, Object className,
-			Object configuration) {
+	                                         Object configuration) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(FeignClientSpecification.class);
 		builder.addConstructorArgValue(name);
 		builder.addConstructorArgValue(className);

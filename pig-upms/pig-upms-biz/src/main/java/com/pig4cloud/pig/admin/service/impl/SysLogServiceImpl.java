@@ -28,13 +28,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pig4cloud.pig.admin.api.dto.SysLogDTO;
 import com.pig4cloud.pig.admin.api.entity.SysLog;
 import com.pig4cloud.pig.admin.mapper.SysLogMapper;
-import com.pig4cloud.pig.admin.mapper.notenant.NoTenantLogMapper;
 import com.pig4cloud.pig.admin.service.SysLogService;
-import com.pig4cloud.pig.common.security.util.SecurityUtils;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * <p>
@@ -44,34 +42,17 @@ import org.springframework.transaction.annotation.Transactional;
  * @author lengleng
  * @since 2017-11-20
  */
-@Slf4j
-@RequiredArgsConstructor
 @Service
 public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> implements SysLogService {
 
-	private final NoTenantLogMapper noTenantLogMapper;
-
 	@Override
 	public Page getLogByPage(Page page, SysLogDTO sysLog) {
-
-		LambdaQueryWrapper<SysLog> wrapper = Wrappers.lambdaQuery();
-		if (StrUtil.isNotBlank(sysLog.getLogType())) {
-			wrapper.eq(SysLog::getLogType, sysLog.getLogType());
-		}
-
-		if (ArrayUtil.isNotEmpty(sysLog.getCreateTime())) {
-			wrapper.ge(SysLog::getCreateTime, sysLog.getCreateTime()[0])
-				.le(SysLog::getCreateTime, sysLog.getCreateTime()[1]);
-		}
-
-		if (1 == SecurityUtils.getUser().getId()){
-			return noTenantLogMapper.selectPage(page, wrapper);
-		}
-		return baseMapper.selectPage(page, wrapper);
+		return baseMapper.selectPage(page, buildQuery(sysLog));
 	}
 
 	/**
 	 * 插入日志
+	 *
 	 * @param sysLog 日志对象
 	 * @return true/false
 	 */
@@ -80,6 +61,37 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 	public Boolean saveLog(SysLog sysLog) {
 		baseMapper.insert(sysLog);
 		return Boolean.TRUE;
+	}
+
+	/**
+	 * 查询日志列表
+	 *
+	 * @param sysLog 查询条件
+	 * @return List<SysLog>
+	 */
+	@Override
+	public List<SysLog> getList(SysLogDTO sysLog) {
+		return baseMapper.selectList(buildQuery(sysLog));
+	}
+
+	/**
+	 * 构建查询条件
+	 *
+	 * @param sysLog 前端条件
+	 * @return LambdaQueryWrapper
+	 */
+	private LambdaQueryWrapper buildQuery(SysLogDTO sysLog) {
+		LambdaQueryWrapper<SysLog> wrapper = Wrappers.lambdaQuery();
+		if (StrUtil.isNotBlank(sysLog.getLogType())) {
+			wrapper.eq(SysLog::getLogType, sysLog.getLogType());
+		}
+
+		if (ArrayUtil.isNotEmpty(sysLog.getCreateTime())) {
+			wrapper.ge(SysLog::getCreateTime, sysLog.getCreateTime()[0])
+					.le(SysLog::getCreateTime, sysLog.getCreateTime()[1]);
+		}
+
+		return wrapper;
 	}
 
 }

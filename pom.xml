@@ -28,7 +28,7 @@
 
     <properties>
         <!-- 项目版本号 -->
-        <revision>3.7.6</revision>
+        <revision>3.8.0</revision>
         <spring-boot.version>3.2.4</spring-boot.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
@@ -45,6 +45,7 @@
         <configuration.version>1.10</configuration.version>
         <jasypt.version>3.0.5</jasypt.version>
         <jaxb.version>4.0.5</jaxb.version>
+        <knife4j.version>3.0.5</knife4j.version>
         <swagger.fox.version>3.0.0</swagger.fox.version>
         <xxl-job.version>2.4.0</xxl-job.version>
         <docker.plugin.version>0.44.0</docker.plugin.version>
@@ -106,6 +107,7 @@
 
     <modules>
         <module>pig-register</module>
+        <module>pig-boot</module>
         <module>pig-gateway</module>
         <module>pig-auth</module>
         <module>pig-upms</module>
@@ -287,7 +289,7 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>cloud</id>
             <properties>
                 <!-- 环境标识，需要与配置文件的名称相对应 -->
                 <profiles.active>dev</profiles.active>
