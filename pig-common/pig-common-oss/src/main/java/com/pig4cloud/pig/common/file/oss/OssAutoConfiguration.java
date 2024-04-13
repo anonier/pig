@@ -50,7 +50,7 @@ public class OssAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "file.oss.info", havingValue = "true")
 	public OssEndpoint ossEndpoint(OssTemplate template) {
-		return new OssEndpoint(template);
+		return new OssEndpoint(properties,template);
 	}
 
 }

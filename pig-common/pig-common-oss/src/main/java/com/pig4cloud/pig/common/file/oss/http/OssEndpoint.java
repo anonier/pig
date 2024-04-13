@@ -21,9 +21,11 @@ import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.oss.service.OssTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
@@ -44,21 +46,22 @@ import java.util.Map;
  * oss.info
  */
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/oss")
 @ConditionalOnProperty(name = "file.oss.info", havingValue = "true")
 public class OssEndpoint {
 
+	private final FileProperties properties;
 	private final OssTemplate template;
 
 	@GetMapping("/getStsToken")
 	public AssumeRoleResponse getStsToken() {
-		return template.getStsToken();
+		return template.getStsToken(properties);
 	}
 
 	@PostMapping("/upload")
 	public String upload(@RequestParam("picture") MultipartFile file) {
-		return template.upload(file);
+		return template.upload(file,properties);
 	}
 
 	/**
