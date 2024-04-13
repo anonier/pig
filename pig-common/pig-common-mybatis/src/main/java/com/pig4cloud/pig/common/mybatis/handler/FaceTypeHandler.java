@@ -9,13 +9,17 @@ import java.util.List;
 
 public class FaceTypeHandler extends AbstractJsonTypeHandler<List<Face>> {
 
+	public FaceTypeHandler(Class<?> type) {
+		super(type);
+	}
+
 	@Override
-	protected List<Face> parse(String json) {
+	public List<Face> parse(String json) {
 		return JSONArray.parseArray(json, Face.class);
 	}
 
 	@Override
-	protected String toJson(List<Face> obj) {
+	public String toJson(Object obj) {
 		return JSON.toJSONString(obj);
 	}
 }

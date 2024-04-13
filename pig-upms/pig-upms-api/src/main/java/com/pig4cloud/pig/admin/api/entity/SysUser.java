@@ -41,6 +41,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "用户")
+@TableName(autoResultMap = true)
 public class SysUser implements Serializable {
 
 	@Serial
