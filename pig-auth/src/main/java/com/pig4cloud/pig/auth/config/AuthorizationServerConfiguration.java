@@ -22,6 +22,8 @@ import com.pig4cloud.pig.auth.support.core.FormIdentityLoginConfigurer;
 import com.pig4cloud.pig.auth.support.core.PigDaoAuthenticationProvider;
 import com.pig4cloud.pig.auth.support.face.OAuth2ResourceOwnerFaceAuthenticationConverter;
 import com.pig4cloud.pig.auth.support.face.OAuth2ResourceOwnerFaceAuthenticationProvider;
+import com.pig4cloud.pig.auth.support.filter.PasswordDecoderFilter;
+import com.pig4cloud.pig.auth.support.filter.ValidateCodeFilter;
 import com.pig4cloud.pig.auth.support.handler.PigAuthenticationFailureEventHandler;
 import com.pig4cloud.pig.auth.support.handler.PigAuthenticationSuccessEventHandler;
 import com.pig4cloud.pig.auth.support.password.OAuth2ResourceOwnerPasswordAuthenticationConverter;
@@ -30,6 +32,7 @@ import com.pig4cloud.pig.auth.support.sms.OAuth2ResourceOwnerSmsAuthenticationCo
 import com.pig4cloud.pig.auth.support.sms.OAuth2ResourceOwnerSmsAuthenticationProvider;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -47,6 +50,7 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Arrays;
@@ -54,7 +58,7 @@ import java.util.Arrays;
 /**
  * @author lengleng
  * @date 2022/5/27
- *
+ * <p>
  * 认证服务器配置
  */
 @Configuration
@@ -63,10 +67,20 @@ public class AuthorizationServerConfiguration {
 
 	private final OAuth2AuthorizationService authorizationService;
 
+	private final PasswordDecoderFilter passwordDecoderFilter;
+
+	private final ValidateCodeFilter validateCodeFilter;
+
 	@Bean
 	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@ConditionalOnProperty(value = "security.micro", matchIfMissing = true)
 	public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+
+		// 增加验证码过滤器
+		http.addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class);
+		// 增加密码解密过滤器
+		http.addFilterBefore(passwordDecoderFilter, UsernamePasswordAuthenticationFilter.class);
 
 		http.with(authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {// 个性化认证授权端点
 					tokenEndpoint.accessTokenRequestConverter(accessTokenRequestConverter()) // 注入自定义的授权认证Converter
@@ -77,9 +91,10 @@ public class AuthorizationServerConfiguration {
 				.authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint// 授权码端点个性化confirm页面
 						.consentPage(SecurityConstants.CUSTOM_CONSENT_PAGE_URI)), Customizer.withDefaults());
 
-		AntPathRequestMatcher[] requestMatchers = new AntPathRequestMatcher[] {
+		AntPathRequestMatcher[] requestMatchers = new AntPathRequestMatcher[]{
 				AntPathRequestMatcher.antMatcher("/token/**"), AntPathRequestMatcher.antMatcher("/actuator/**"),
-				AntPathRequestMatcher.antMatcher("/css/**"), AntPathRequestMatcher.antMatcher("/error") };
+				AntPathRequestMatcher.antMatcher("/code/image"), AntPathRequestMatcher.antMatcher("/css/**"),
+				AntPathRequestMatcher.antMatcher("/error")};
 
 		http.authorizeHttpRequests(authorizeRequests -> {
 					// 自定义接口、端点暴露
@@ -95,6 +110,7 @@ public class AuthorizationServerConfiguration {
 
 		// 注入自定义授权模式实现
 		addCustomOAuth2GrantAuthenticationProvider(http);
+
 		return securityFilterChain;
 	}
 
@@ -115,7 +131,8 @@ public class AuthorizationServerConfiguration {
 	 * request -> xToken 注入请求转换器
 	 * @return DelegatingAuthenticationConverter
 	 */
-	private AuthenticationConverter accessTokenRequestConverter() {
+	@Bean
+	public AuthenticationConverter accessTokenRequestConverter() {
 		return new DelegatingAuthenticationConverter(Arrays.asList(
 				new OAuth2ResourceOwnerPasswordAuthenticationConverter(),
 				new OAuth2ResourceOwnerSmsAuthenticationConverter(),
@@ -128,10 +145,9 @@ public class AuthorizationServerConfiguration {
 
 	/**
 	 * 注入授权模式实现提供方
-	 *
+	 * <p>
 	 * 1. 密码模式 </br>
 	 * 2. 短信登录 </br>
-	 *
 	 */
 	@SuppressWarnings("unchecked")
 	private void addCustomOAuth2GrantAuthenticationProvider(HttpSecurity http) {
