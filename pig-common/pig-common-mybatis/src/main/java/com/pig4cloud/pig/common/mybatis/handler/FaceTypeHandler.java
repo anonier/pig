@@ -4,9 +4,11 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.extension.handlers.AbstractJsonTypeHandler;
 import com.pig4cloud.pig.common.mybatis.base.Face;
+import org.apache.ibatis.type.MappedTypes;
 
 import java.util.List;
 
+@MappedTypes({List.class})
 public class FaceTypeHandler extends AbstractJsonTypeHandler<List<Face>> {
 
 	public FaceTypeHandler(Class<?> type) {

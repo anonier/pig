@@ -22,6 +22,7 @@ package com.pig4cloud.pig.admin.api.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pig4cloud.pig.common.mybatis.base.Face;
+//import com.pig4cloud.pig.common.mybatis.handler.FaceTypeHandler;
 import com.pig4cloud.pig.common.mybatis.handler.FaceTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
