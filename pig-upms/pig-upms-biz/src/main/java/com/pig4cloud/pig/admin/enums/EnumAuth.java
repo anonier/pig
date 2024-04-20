@@ -18,6 +18,8 @@ public enum EnumAuth {
 
 	FACE("face"),
 
+	CARD("card"),
+
 	MOBILE("mobile"),
 
 	CODE("code"),
@@ -25,6 +27,8 @@ public enum EnumAuth {
 	LOGIN_MOBILE("login_mobile"),
 
 	LOGIN_SMS("login_sms"),
+
+	LOGIN_CARD("login_card"),
 
 	LOGIN_USERNAME("login_username"),
 

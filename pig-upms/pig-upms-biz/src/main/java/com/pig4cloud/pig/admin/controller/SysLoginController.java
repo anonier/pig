@@ -104,4 +104,19 @@ public class SysLoginController {
 			}
 		}));
 	}
+
+	/**
+	 * 刷卡登入
+	 */
+	@Inner(false)
+	@SysLog("刷卡登入")
+	@PostMapping("card")
+	public R<LoginDto> card(@RequestBody LoginVo vo) {
+		return R.ok(loginService.login(new LoginVo() {
+			{
+				setType("card");
+				setCard(vo.getCard());
+			}
+		}));
+	}
 }

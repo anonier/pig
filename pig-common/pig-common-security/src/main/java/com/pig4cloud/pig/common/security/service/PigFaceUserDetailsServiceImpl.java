@@ -29,6 +29,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+
+import java.util.Objects;
+
+import static com.pig4cloud.pig.common.core.constant.CacheConstants.CLIENT_DETAILS_KEY;
 
 /**
  * 用户详细信息
@@ -64,7 +69,7 @@ public class PigFaceUserDetailsServiceImpl implements PigUserDetailsService {
 
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
-			cache.put(sysUser.getUsername(), userDetails);
+			cache.put(sysUser.getUserId(), userDetails);
 		}
 		return userDetails;
 	}
@@ -77,6 +82,10 @@ public class PigFaceUserDetailsServiceImpl implements PigUserDetailsService {
 	 */
 	@Override
 	public boolean support(String clientId, String grantType) {
-		return SecurityConstants.FACE.equals(grantType);
+		Cache cache = cacheManager.getCache(CLIENT_DETAILS_KEY);
+		assert cache != null;
+		RegisteredClient registeredClient = (RegisteredClient) (Objects.requireNonNull(cache.get(clientId)).get());
+		assert registeredClient != null;
+		return registeredClient.getAuthorizationGrantTypes().stream().anyMatch(a -> a.getValue().equals(grantType) && grantType.equals(SecurityConstants.FACE));
 	}
 }

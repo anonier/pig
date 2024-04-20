@@ -73,6 +73,11 @@ public interface SecurityConstants {
 	String FACE = "face";
 
 	/**
+	 * 刷卡登录
+	 */
+	String CARD = "card";
+
+	/**
 	 * {bcrypt} 加密的特征码
 	 */
 	String BCRYPT = "{bcrypt}";

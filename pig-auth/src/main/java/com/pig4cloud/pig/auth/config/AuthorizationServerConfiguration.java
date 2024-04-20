@@ -17,6 +17,8 @@
 package com.pig4cloud.pig.auth.config;
 
 import com.pig4cloud.pig.auth.support.CustomeOAuth2AccessTokenGenerator;
+import com.pig4cloud.pig.auth.support.card.OAuth2ResourceOwnerCardAuthenticationConverter;
+import com.pig4cloud.pig.auth.support.card.OAuth2ResourceOwnerCardAuthenticationProvider;
 import com.pig4cloud.pig.auth.support.core.CustomeOAuth2TokenCustomizer;
 import com.pig4cloud.pig.auth.support.core.FormIdentityLoginConfigurer;
 import com.pig4cloud.pig.auth.support.core.PigDaoAuthenticationProvider;
@@ -138,6 +140,7 @@ public class AuthorizationServerConfiguration {
 				new OAuth2ResourceOwnerSmsAuthenticationConverter(),
 				new OAuth2RefreshTokenAuthenticationConverter(),
 				new OAuth2ResourceOwnerFaceAuthenticationConverter(),
+				new OAuth2ResourceOwnerCardAuthenticationConverter(),
 				new OAuth2ClientCredentialsAuthenticationConverter(),
 				new OAuth2AuthorizationCodeAuthenticationConverter(),
 				new OAuth2AuthorizationCodeRequestAuthenticationConverter()));
@@ -163,6 +166,9 @@ public class AuthorizationServerConfiguration {
 		OAuth2ResourceOwnerFaceAuthenticationProvider resourceOwnerFaceAuthenticationProvider = new OAuth2ResourceOwnerFaceAuthenticationProvider(
 				authenticationManager, authorizationService, oAuth2TokenGenerator());
 
+		OAuth2ResourceOwnerCardAuthenticationProvider resourceOwnerCardAuthenticationProvider = new OAuth2ResourceOwnerCardAuthenticationProvider(
+				authenticationManager, authorizationService, oAuth2TokenGenerator());
+
 		// 处理 UsernamePasswordAuthenticationToken
 		http.authenticationProvider(new PigDaoAuthenticationProvider());
 		// 处理 OAuth2ResourceOwnerPasswordAuthenticationToken
@@ -171,6 +177,7 @@ public class AuthorizationServerConfiguration {
 		http.authenticationProvider(resourceOwnerSmsAuthenticationProvider);
 		// 处理 OAuth2ResourceOwnerSmsAuthenticationToken
 		http.authenticationProvider(resourceOwnerFaceAuthenticationProvider);
+		// 处理 OAuth2ResourceOwnerCardAuthenticationToken
+		http.authenticationProvider(resourceOwnerCardAuthenticationProvider);
 	}
-
 }

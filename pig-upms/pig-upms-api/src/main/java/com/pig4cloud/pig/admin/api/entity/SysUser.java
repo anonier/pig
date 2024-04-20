@@ -200,4 +200,10 @@ public class SysUser implements Serializable {
 	@Schema(description = "人脸")
 	@TableField(typeHandler = FaceTypeHandler.class)
 	private List<Face> face;
+
+	/**
+	 * 卡编号
+	 */
+	@Schema(description = "卡编号")
+	private String card;
 }

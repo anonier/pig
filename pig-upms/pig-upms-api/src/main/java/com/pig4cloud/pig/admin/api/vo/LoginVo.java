@@ -22,6 +22,11 @@ public class LoginVo implements Serializable {
 	private String username;
 
 	/**
+	 * 卡号
+	 */
+	private String card;
+
+	/**
 	 * 手机
 	 */
 	private String phone;

@@ -23,13 +23,11 @@ import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
-import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 
@@ -43,78 +41,51 @@ import static com.pig4cloud.pig.common.core.constant.CacheConstants.CLIENT_DETAI
  * @author lengleng hccake
  */
 @Slf4j
-@Primary
 @RequiredArgsConstructor
-public class PigUserDetailsServiceImpl implements PigUserDetailsService {
+public class PigCardUserDetailsServiceImpl implements PigUserDetailsService {
 
 	private final RemoteUserService remoteUserService;
 	private final CacheManager cacheManager;
 
-	/**
-	 * 用户名密码登录
-	 *
-	 * @param username 用户名
-	 * @return
-	 */
 	@Override
 	@SneakyThrows
 	public UserDetails loadUserByUsername(String username) {
+		return null;
+	}
+
+	/**
+	 * 用户信息组装
+	 */
+	@Override
+	public UserDetails loadUserByUser(SysUser sysUser) {
 		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
-		if (cache != null && cache.get(username) != null) {
-			return (PigUser) cache.get(username).get();
+		if (cache != null && cache.get(sysUser.getCard()) != null) {
+			return (PigUser) cache.get(sysUser.getCard()).get();
 		}
 
 		UserDTO userDTO = new UserDTO();
-		userDTO.setUsername(username);
+		userDTO.setCard(sysUser.getCard());
 		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
+
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
-			cache.put(username, userDetails);
+			cache.put(sysUser.getCard(), userDetails);
 		}
 		return userDetails;
 	}
 
+	/**
+	 * 是否支持此客户端校验
+	 *
+	 * @param clientId 目标客户端
+	 * @return true/false
+	 */
 	@Override
 	public boolean support(String clientId, String grantType) {
 		Cache cache = cacheManager.getCache(CLIENT_DETAILS_KEY);
 		assert cache != null;
 		RegisteredClient registeredClient = (RegisteredClient) (Objects.requireNonNull(cache.get(clientId)).get());
 		assert registeredClient != null;
-		return registeredClient.getAuthorizationGrantTypes().stream().anyMatch(a -> a.getValue().equals(grantType) && grantType.equals(SecurityConstants.PASSWORD));
-	}
-
-	@Override
-	public int getOrder() {
-		return Integer.MIN_VALUE;
-	}
-
-	/**
-	 * 通过用户实体查询
-	 */
-	@Override
-	public UserDetails loadUserByUser(SysUser sysUser) {
-		Cache cache = cacheManager.getCache(CacheConstants.USER_DETAILS);
-		if (cache != null && cache.get(sysUser.getUsername()) != null) {
-			TenantContextHolder.setTenantId(((PigUser) cache.get(sysUser.getUsername()).get()).getTenantId());
-			return (PigUser) cache.get(sysUser.getUsername()).get();
-		}
-
-		UserDTO userDTO = new UserDTO() {
-			{
-				setUsername(sysUser.getUsername());
-				setClientId(sysUser.getClientId());
-			}
-		};
-		R<UserInfo> result = null;
-		if ("pig".equals(sysUser.getClientId())) {
-			result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
-		}
-
-		UserDetails userDetails = getUserDetails(result);
-		if (cache != null) {
-			cache.put(sysUser.getUsername(), userDetails);
-		}
-		TenantContextHolder.setTenantId(result.getData().getSysUser().getTenantId());
-		return userDetails;
+		return registeredClient.getAuthorizationGrantTypes().stream().anyMatch(a -> a.getValue().equals(grantType)) && grantType.equals(SecurityConstants.CARD);
 	}
 }
