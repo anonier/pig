@@ -31,9 +31,7 @@ public interface PigUserDetailsService extends UserDetailsService, Ordered {
 	 * @param clientId 目标客户端
 	 * @return true/false
 	 */
-	default boolean support(String clientId, String grantType) {
-		return true;
-	}
+	boolean support(String clientId, String grantType);
 
 	/**
 	 * 排序值 默认取最大的
