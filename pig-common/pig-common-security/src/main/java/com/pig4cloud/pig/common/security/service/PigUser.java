@@ -78,15 +78,31 @@ public class PigUser extends User implements OAuth2AuthenticatedPrincipal {
 	@Setter
 	private Long tenantId;
 
+	/**
+	 * nickName
+	 */
+	@Getter
+	@Setter
+	private String nickName;
+
+	/**
+	 * 卡号
+	 */
+	@Getter
+	@Setter
+	private String card;
+
 	public PigUser(Long id, Long deptId, String username, String password, String phone, boolean enabled,
-			boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
-			Collection<? extends GrantedAuthority> authorities,String clientId,Long tenantId) {
+				   boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
+				   Collection<? extends GrantedAuthority> authorities, String clientId, Long tenantId, String nickName, String card) {
 		super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 		this.id = id;
 		this.deptId = deptId;
 		this.phone = phone;
 		this.clientId = clientId;
 		this.tenantId = tenantId;
+		this.nickName = nickName;
+		this.card = card;
 	}
 
 	/**
@@ -100,7 +116,7 @@ public class PigUser extends User implements OAuth2AuthenticatedPrincipal {
 
 	@Override
 	public String getName() {
-		return this.getUsername();
+		return this.getNickName();
 	}
 
 }

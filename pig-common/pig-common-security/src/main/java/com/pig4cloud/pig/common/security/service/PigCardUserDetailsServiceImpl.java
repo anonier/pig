@@ -16,6 +16,7 @@
 
 package com.pig4cloud.pig.common.security.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.dto.UserInfo;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
@@ -23,6 +24,7 @@ import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
+import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -87,5 +89,17 @@ public class PigCardUserDetailsServiceImpl implements PigUserDetailsService {
 		RegisteredClient registeredClient = (RegisteredClient) (Objects.requireNonNull(cache.get(clientId)).get());
 		assert registeredClient != null;
 		return registeredClient.getAuthorizationGrantTypes().stream().anyMatch(a -> a.getValue().equals(grantType)) && grantType.equals(SecurityConstants.CARD);
+	}
+
+	@Override
+	public void clearUserDetailsCache(SysUser sysUser) {
+		Cache.ValueWrapper valueWrapper = Objects.requireNonNull(cacheManager.getCache(CacheConstants.USER_DETAILS))
+				.get(sysUser.getCard());
+		if (ObjectUtil.isNotNull(valueWrapper)) {
+			PigUser pigUser = (PigUser) (valueWrapper.get());
+			assert pigUser != null;
+			TenantContextHolder.setTenantId(pigUser.getTenantId());
+			Objects.requireNonNull(cacheManager.getCache(CacheConstants.USER_DETAILS)).evictIfPresent(sysUser.getCard());
+		}
 	}
 }

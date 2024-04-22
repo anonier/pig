@@ -16,6 +16,7 @@
 
 package com.pig4cloud.pig.common.security.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.dto.UserInfo;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
@@ -116,5 +117,17 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 		}
 		TenantContextHolder.setTenantId(result.getData().getSysUser().getTenantId());
 		return userDetails;
+	}
+
+	@Override
+	public void clearUserDetailsCache(SysUser sysUser) {
+		Cache.ValueWrapper valueWrapper = Objects.requireNonNull(cacheManager.getCache(CacheConstants.USER_DETAILS))
+				.get(sysUser.getUsername());
+		if (ObjectUtil.isNotNull(valueWrapper)) {
+			PigUser pigUser = (PigUser) (valueWrapper.get());
+			assert pigUser != null;
+			TenantContextHolder.setTenantId(pigUser.getTenantId());
+			Objects.requireNonNull(cacheManager.getCache(CacheConstants.USER_DETAILS)).evictIfPresent(sysUser.getUsername());
+		}
 	}
 }

@@ -20,8 +20,10 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.TemporalAccessorUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.admin.api.entity.SysOauthClientDetails;
+import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteClientDetailsService;
 import com.pig4cloud.pig.admin.api.vo.TokenVo;
 import com.pig4cloud.pig.auth.support.handler.PigAuthenticationFailureEventHandler;
@@ -32,6 +34,8 @@ import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.core.util.RetOps;
 import com.pig4cloud.pig.common.core.util.SpringContextHolder;
 import com.pig4cloud.pig.common.security.annotation.Inner;
+import com.pig4cloud.pig.common.security.service.PigUser;
+import com.pig4cloud.pig.common.security.service.PigUserDetailsService;
 import com.pig4cloud.pig.common.security.util.OAuth2EndpointUtils;
 import com.pig4cloud.pig.common.security.util.OAuth2ErrorCodesExpand;
 import com.pig4cloud.pig.common.security.util.OAuthClientException;
@@ -41,12 +45,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
+import org.springframework.core.Ordered;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.event.LogoutSuccessEvent;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
@@ -63,9 +69,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -183,7 +187,27 @@ public class PigTokenEndpoint {
 			return R.ok();
 		}
 		// 清空用户信息（立即删除）
-		cacheManager.getCache(CacheConstants.USER_DETAILS).evictIfPresent(authorization.getPrincipalName());
+		Objects.requireNonNull(authorization).getRegisteredClientId();
+		Map<String, PigUserDetailsService> userDetailsServiceMap = SpringUtil
+				.getBeansOfType(PigUserDetailsService.class);
+		Optional<PigUserDetailsService> optional = userDetailsServiceMap.values()
+				.stream()
+				.filter(service -> service.support(Objects.requireNonNull(authorization).getRegisteredClientId(),
+						authorization.getAuthorizationGrantType().getValue()))
+				.max(Comparator.comparingInt(Ordered::getOrder));
+		Object principal = Objects.requireNonNull(authorization).getAttributes().get(Principal.class.getName());
+		UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) principal;
+		Object tokenPrincipal = usernamePasswordAuthenticationToken.getPrincipal();
+		PigUser pigUser = (PigUser) tokenPrincipal;
+		optional.get().clearUserDetailsCache(new SysUser() {
+			{
+				setUserId(pigUser.getId());
+				setCard(pigUser.getCard());
+				setPhone(pigUser.getPhone());
+				setUsername(pigUser.getUsername());
+				setClientId(pigUser.getClientId());
+			}
+		});
 		// 清空access token
 		authorizationService.remove(authorization);
 		// 处理自定义退出事件，保存相关日志

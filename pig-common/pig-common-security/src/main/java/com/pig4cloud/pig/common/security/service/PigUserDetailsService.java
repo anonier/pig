@@ -60,13 +60,13 @@ public interface PigUserDetailsService extends UserDetailsService, Ordered {
 		}
 
 		Collection<GrantedAuthority> authorities = AuthorityUtils
-			.createAuthorityList(dbAuthsSet.toArray(new String[0]));
+				.createAuthorityList(dbAuthsSet.toArray(new String[0]));
 		SysUser user = info.getSysUser();
 
 		// 构造security用户
 		return new PigUser(user.getUserId(), user.getDeptId(), user.getUsername(),
 				SecurityConstants.BCRYPT + user.getPassword(), user.getPhone(), true, true, true,
-				StrUtil.equals(user.getLockFlag(), CommonConstants.STATUS_NORMAL), authorities, user.getClientId(), user.getTenantId());
+				StrUtil.equals(user.getLockFlag(), CommonConstants.STATUS_NORMAL), authorities, user.getClientId(), user.getTenantId(), user.getNickname(), user.getCard());
 	}
 
 	/**
@@ -77,11 +77,19 @@ public interface PigUserDetailsService extends UserDetailsService, Ordered {
 	default UserDetails loadUserByUser(PigUser pigUser) {
 		return this.loadUserByUser(new SysUser(){
 			{
-				setUsername(pigUser.getName());
+				setUserId(pigUser.getId());
+				setCard(pigUser.getCard());
+				setPhone(pigUser.getPhone());
+				setUsername(pigUser.getUsername());
 				setClientId(pigUser.getClientId());
 			}
 		});
 	}
 
 	UserDetails loadUserByUser(SysUser sysUser);
+
+	/**
+	 * 清空用户信息
+	 */
+	void clearUserDetailsCache(SysUser sysUser);
 }
