@@ -106,10 +106,7 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 				setClientId(sysUser.getClientId());
 			}
 		};
-		R<UserInfo> result = null;
-		if ("pig".equals(sysUser.getClientId())) {
-			result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
-		}
+		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
 
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
