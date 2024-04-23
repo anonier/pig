@@ -16,9 +16,10 @@ public class RedissonConfig {
 	public RedissonClient redissonClient(RedissonProperties redissonProperties) {
 		Config config = new Config();
 		config.useSingleServer()
-				.setAddress(redissonProperties.getAddress())
+				.setAddress(redissonProperties.getHost() + ":" + redissonProperties.getPort())
 				.setPassword(redissonProperties.getPassword())
-				.setConnectTimeout(redissonProperties.getTimeout());
+				.setDatabase(null == redissonProperties.getDatabase() ? 0 : redissonProperties.getDatabase())
+				.setConnectTimeout(redissonProperties.getConnectTimeout());
 		return Redisson.create(config);
 	}
 }

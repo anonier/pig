@@ -7,12 +7,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * redis配置
  */
 @Data
-@ConfigurationProperties("spring.redisson")
+@ConfigurationProperties("spring.data.redis")
 public class RedissonProperties {
 
-	private String address;
+	private String host;
 
 	private String password;
 
-	private Integer timeout;
+	private Integer connectTimeout;
+
+	private Integer database;
+
+	private Integer port;
 }
