@@ -52,4 +52,16 @@ public class TaskExecutorConfiguration implements AsyncConfigurer {
 		return taskExecutor;
 	}
 
+	@Bean("iotExecutor")
+	public ThreadPoolTaskExecutor iotExecutor() {
+		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+		taskExecutor.setCorePoolSize(corePoolSize.orElse(cpuNum));
+		taskExecutor.setMaxPoolSize(maxPoolSize.orElse(cpuNum * 2));
+		taskExecutor.setQueueCapacity(queueCapacity.orElse(500));
+		taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
+		taskExecutor.setAwaitTerminationSeconds(awaitTerminationSeconds.orElse(60));
+		taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+		taskExecutor.initialize();
+		return taskExecutor;
+	}
 }
