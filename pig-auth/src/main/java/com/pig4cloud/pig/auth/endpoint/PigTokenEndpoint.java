@@ -29,7 +29,6 @@ import com.pig4cloud.pig.admin.api.vo.TokenVo;
 import com.pig4cloud.pig.auth.support.handler.PigAuthenticationFailureEventHandler;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.CommonConstants;
-import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.core.util.RetOps;
 import com.pig4cloud.pig.common.core.util.SpringContextHolder;
@@ -112,8 +111,7 @@ public class PigTokenEndpoint {
 			@RequestParam(OAuth2ParameterNames.CLIENT_ID) String clientId,
 			@RequestParam(OAuth2ParameterNames.SCOPE) String scope,
 			@RequestParam(OAuth2ParameterNames.STATE) String state) {
-		SysOauthClientDetails clientDetails = RetOps
-			.of(clientDetailsService.getClientDetailsById(clientId, SecurityConstants.FROM_IN))
+		SysOauthClientDetails clientDetails = RetOps.of(clientDetailsService.getClientDetailsById(clientId))
 			.getData()
 			.orElseThrow(() -> new OAuthClientException("clientId 不合法"));
 
