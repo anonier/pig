@@ -85,7 +85,7 @@ public class PigAppUserDetailsServiceImpl implements PigUserDetailsService {
 
 		UserDTO userDTO = new UserDTO();
 		userDTO.setPhone(sysUser.getPhone());
-		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
+		R<UserInfo> result = remoteUserService.info(userDTO);
 
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {

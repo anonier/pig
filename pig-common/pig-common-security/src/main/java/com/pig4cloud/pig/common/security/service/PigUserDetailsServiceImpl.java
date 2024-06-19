@@ -22,6 +22,7 @@ import com.pig4cloud.pig.admin.api.dto.UserInfo;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
+import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import com.pig4cloud.pig.common.mybatis.TenantContextHolder;
 import lombok.RequiredArgsConstructor;
@@ -105,7 +106,7 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 				setClientId(sysUser.getClientId());
 			}
 		};
-		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
+		R<UserInfo> result = remoteUserService.info(userDTO);
 
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
