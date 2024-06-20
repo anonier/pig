@@ -34,7 +34,7 @@ services:
       context: ./pig-gateway
     restart: always
     container_name: pig-gateway
-    image: pauly.fun:8009/pig-gateway
+    image: 192.168.0.110/pig-gateway
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
@@ -46,7 +46,7 @@ services:
       context: ./pig-auth
     restart: always
     container_name: pig-auth
-    image: pauly.fun:8009/pig-auth
+    image: 192.168.0.110/pig-gateway
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
@@ -58,7 +58,7 @@ services:
       context: ./pig-upms/pig-upms-biz
     restart: always
     container_name: pig-upms
-    image: pauly.fun:8009/pig-upms
+    image: 192.168.0.110/pig-gateway
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
@@ -72,7 +72,7 @@ services:
       context: ./pig-visual/pig-monitor
     restart: always
     container_name: pig-monitor
-    image: pauly.fun:8009/pig-monitor
+    image: 192.168.0.110/pig-gateway
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
@@ -84,7 +84,7 @@ services:
       context: ./pig-visual/pig-codegen
     restart: always
     container_name: pig-codegen
-    image: pauly.fun:8009/pig-codegen
+    image: 192.168.0.110/pig-gateway
     network_mode: host
     extra_hosts:
       - "pig-redis:127.0.0.1"
