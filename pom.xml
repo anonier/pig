@@ -292,9 +292,9 @@
             <properties>
                 <!-- 环境标识，需要与配置文件的名称相对应 -->
                 <profiles.active>dev</profiles.active>
-                <nacos.username>nacos</nacos.username>
-                <nacos.password>${env.NACOS_PWD}</nacos.password>
-				<nacos.namespace>${env.NACOS_NAMESPACE}</nacos.namespace>
+<!--                <nacos.username>nacos</nacos.username>-->
+<!--                <nacos.password>${env.NACOS_PWD}</nacos.password>-->
+<!--				<nacos.namespace>${env.NACOS_NAMESPACE}</nacos.namespace>-->
             </properties>
             <activation>
                 <!-- 默认环境 -->
