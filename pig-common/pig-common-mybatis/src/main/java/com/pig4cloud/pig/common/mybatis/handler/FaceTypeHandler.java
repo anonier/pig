@@ -21,7 +21,7 @@ public class FaceTypeHandler extends AbstractJsonTypeHandler<List<Face>> {
 	}
 
 	@Override
-	public String toJson(Object obj) {
+	public String toJson(List<Face> obj) {
 		return JSON.toJSONString(obj);
 	}
 }
