@@ -154,7 +154,7 @@ public abstract class OAuth2ResourceOwnerBaseAuthenticationProvider<T extends OA
 			OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization
 				.withRegisteredClient(registeredClient)
 				.principalName(usernamePasswordAuthentication.getName())
-					.authorizationGrantType(resouceOwnerBaseAuthentication.getAuthorizationGrantType())
+				.authorizationGrantType(resouceOwnerBaseAuthentication.getAuthorizationGrantType())
 				// 0.4.0 新增的方法
 				.authorizedScopes(authorizedScopes);
 

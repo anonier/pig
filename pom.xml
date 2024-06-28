@@ -28,35 +28,36 @@
 
     <properties>
         <!-- 项目版本号 -->
-        <revision>3.7.4</revision>
-        <spring-boot.version>3.2.2</spring-boot.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
-        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
+        <revision>3.8.0</revision>
+        <spring-boot.version>3.3.1</spring-boot.version>
+        <spring-cloud.version>2023.0.2</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot-admin.version>3.2.1</spring-boot-admin.version>
-        <spring.authorization.version>1.2.1</spring.authorization.version>
+        <spring-boot-admin.version>3.3.2</spring-boot-admin.version>
+        <spring.authorization.version>1.3.1</spring.authorization.version>
         <screw.version>0.0.3</screw.version>
         <captcha.version>2.2.3</captcha.version>
-        <aws.version>1.12.261</aws.version>
+        <aws.version>1.12.675</aws.version>
         <velocity.version>2.3</velocity.version>
         <velocity.tool.version>3.1</velocity.tool.version>
         <configuration.version>1.10</configuration.version>
         <jasypt.version>3.0.5</jasypt.version>
-        <jaxb.version>2.3.5</jaxb.version>
+        <jaxb.version>4.0.5</jaxb.version>
+        <knife4j.version>3.0.5</knife4j.version>
         <swagger.fox.version>3.0.0</swagger.fox.version>
         <xxl-job.version>2.4.0</xxl-job.version>
-        <docker.plugin.version>0.32.0</docker.plugin.version>
+        <docker.plugin.version>0.44.0</docker.plugin.version>
         <docker.host>http://192.168.0.100:2375</docker.host>
         <docker.registry>registry.cn-shanghai.aliyuncs.com</docker.registry>
         <docker.namespace>pig4cloud</docker.namespace>
         <docker.username>username</docker.username>
         <docker.password>password</docker.password>
-        <git.commit.plugin>6.0.0</git.commit.plugin>
-        <spring.checkstyle.plugin>0.0.39</spring.checkstyle.plugin>
+        <git.commit.plugin>9.0.0</git.commit.plugin>
+        <spring.checkstyle.plugin>0.0.41</spring.checkstyle.plugin>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
     </properties>
 
     <!-- 以下依赖 全局所有的模块都会引入  -->
@@ -105,16 +106,12 @@
     </dependencies>
 
     <modules>
-        <!-- PIG代码生成模块 -->
-        <module>pig-codegen</module>
-        <!-- PIGQuartz模块 -->
-        <module>pig-quartz</module>
-        <!-- PIG身份验证模块 -->
+        <module>pig-register</module>
+        <module>pig-gateway</module>
         <module>pig-auth</module>
-        <!-- PIG用户管理系统模块 -->
         <module>pig-upms</module>
-        <!-- PIG通用模块 -->
         <module>pig-common</module>
+        <module>pig-visual</module>
     </modules>
 
     <dependencyManagement>
@@ -291,7 +288,7 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>cloud</id>
             <properties>
                 <!-- 环境标识，需要与配置文件的名称相对应 -->
                 <profiles.active>dev</profiles.active>
@@ -303,21 +300,11 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
+        <profile>
+            <id>boot</id>
+            <modules>
+                <module>pig-boot</module>
+            </modules>
+        </profile>
     </profiles>
-
-    <repositories>
-        <repository>
-            <id>snapshots</id>
-            <url>
-                https://oss.sonatype.org/content/repositories/snapshots/
-            </url>
-        </repository>
-        <repository>
-            <id>release</id>
-            <url>
-                https://oss.sonatype.org/service/local/staging/deploy/maven2/
-            </url>
-        </repository>
-    </repositories>
-
 </project>

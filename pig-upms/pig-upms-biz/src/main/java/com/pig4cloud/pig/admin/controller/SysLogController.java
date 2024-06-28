@@ -20,7 +20,6 @@
 package com.pig4cloud.pig.admin.controller;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pig4cloud.pig.admin.api.dto.SysLogDTO;
 import com.pig4cloud.pig.admin.api.entity.SysLog;
@@ -97,8 +96,8 @@ public class SysLogController {
 	@ResponseExcel
 	@GetMapping("/export")
 	@PreAuthorize("@pms.hasPermission('sys_log_export')")
-	public List<SysLog> export(SysLog sysLog) {
-		return sysLogService.list(Wrappers.query(sysLog));
+	public List<SysLog> export(SysLogDTO sysLog) {
+		return sysLogService.getList(sysLog);
 	}
 
 }

@@ -85,8 +85,11 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 				if (attributes == null) {
 					continue;
 				}
+
+				// 如果是单体项目自动注入 & url 为空
+				Boolean isMicro = environment.getProperty("spring.cloud.nacos.discovery.enabled", Boolean.class, true);
 				// 如果已经存在该 bean，支持原生的 Feign
-				if (registry.containsBeanDefinition(className)) {
+				if (registry.containsBeanDefinition(className) && isMicro) {
 					continue;
 				}
 
@@ -195,11 +198,21 @@ public class PigFeignClientsRegistrar implements ImportBeanDefinitionRegistrar, 
 	}
 
 	private String getUrl(Map<String, Object> attributes) {
+
 		// 如果是单体项目自动注入 & url 为空
-		String url = (String) attributes.get("url");
-		boolean present = ClassUtils.isPresent("com.alibaba.cloud.nacos.discovery.NacosDiscoveryClient",
-				this.getClass().getClassLoader());
-		if (!StringUtils.hasText(url) && !present) {
+		Boolean isMicro = environment.getProperty("spring.cloud.nacos.discovery.enabled", Boolean.class, true);
+
+		if (isMicro) {
+			return null;
+		}
+
+		Object objUrl = attributes.get("url");
+
+		String url = "";
+		if (StringUtils.hasText(objUrl.toString())) {
+			url = resolve(objUrl.toString());
+		}
+		else {
 			url = resolve(BASE_URL);
 		}
 

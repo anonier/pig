@@ -1,18 +1,12 @@
 package com.pig4cloud.pig.auth.support.core;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.Mode;
-import cn.hutool.crypto.Padding;
-import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.extra.spring.SpringUtil;
-import com.pig4cloud.pig.common.core.constant.SecurityConstants;
-import com.pig4cloud.pig.common.core.util.SpringContextHolder;
 import com.pig4cloud.pig.common.core.util.WebUtils;
 import com.pig4cloud.pig.common.security.service.PigUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,12 +19,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.web.authentication.www.BasicAuthenticationConverter;
 import org.springframework.util.Assert;
 
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -73,9 +66,9 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 
-		// app 模式不用校验密码
+		// 只有密码模式需要校验密码
 		String grantType = WebUtils.getRequest().get().getParameter(OAuth2ParameterNames.GRANT_TYPE);
-		if (StrUtil.equals(SecurityConstants.MOBILE, grantType)) {
+		if (!StrUtil.equals(AuthorizationGrantType.PASSWORD.getValue(), grantType)) {
 			return;
 		}
 
@@ -85,9 +78,6 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 				.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
 		}
 		String presentedPassword = authentication.getCredentials().toString();
-
-		// 解密密码
-		presentedPassword = decode(presentedPassword);
 		if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
 			this.logger.debug("Failed to authenticate since password does not match stored value");
 			throw new BadCredentialsException(this.messages
@@ -97,6 +87,7 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
 	@SneakyThrows
 	@Override
+
 	protected final UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
 		prepareTimingAttackProtection();
 		HttpServletRequest request = WebUtils.getRequest()
@@ -196,19 +187,6 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 
 	public void setUserDetailsPasswordService(UserDetailsPasswordService userDetailsPasswordService) {
 		this.userDetailsPasswordService = userDetailsPasswordService;
-	}
-
-	/**
-	 * 密码解密
-	 * @param presentedPassword 加密密码
-	 */
-	private String decode(String presentedPassword) {
-		// 构建前端对应解密AES 因子
-		String key = SpringContextHolder.getBean(Environment.class)
-			.getProperty("gateway.encodeKey", "pigxpigxpigxpigx");
-		AES aes = new AES(Mode.CFB, Padding.NoPadding, new SecretKeySpec(key.getBytes(), "AES"),
-				new IvParameterSpec(key.getBytes()));
-		return aes.decryptStr(presentedPassword);
 	}
 
 }

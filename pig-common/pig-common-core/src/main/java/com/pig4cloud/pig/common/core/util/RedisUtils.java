@@ -118,10 +118,9 @@ public class RedisUtils {
 	 */
 	public void del(String... keys) {
 		RedisTemplate<Object, Object> redisTemplate = SpringContextHolder.getBean(RedisTemplate.class);
-		Optional.ofNullable(keys)
-			.map(Arrays::asList)
-			.filter(keysList -> !keysList.isEmpty())
-			.ifPresent(redisTemplate::delete);
+		if (keys != null) {
+			Arrays.stream(keys).forEach(redisTemplate::delete);
+		}
 	}
 
 	/**

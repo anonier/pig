@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.pig4cloud.pig.admin.api.entity.SysLog;
 import com.pig4cloud.pig.admin.api.feign.RemoteLogService;
-import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.jackson.PigJavaTimeModule;
 import com.pig4cloud.pig.common.log.config.PigLogProperties;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +66,7 @@ public class SysLogListener implements InitializingBean {
 			sysLog.setParams(StrUtil.subPre(params, logProperties.getMaxLength()));
 		}
 
-		remoteLogService.saveLog(sysLog, SecurityConstants.FROM_IN);
+		remoteLogService.saveLog(sysLog);
 	}
 
 	@Override

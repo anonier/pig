@@ -85,8 +85,7 @@ public class PigRemoteRegisteredClientRepository implements RegisteredClientRepo
 	@Cacheable(value = CacheConstants.CLIENT_DETAILS_KEY, key = "#clientId", unless = "#result == null")
 	public RegisteredClient findByClientId(String clientId) {
 
-		SysOauthClientDetails clientDetails = RetOps
-			.of(clientDetailsService.getClientDetailsById(clientId, SecurityConstants.FROM_IN))
+		SysOauthClientDetails clientDetails = RetOps.of(clientDetailsService.getClientDetailsById(clientId))
 			.getData()
 			.orElseThrow(() -> new OAuth2AuthorizationCodeRequestAuthenticationException(
 					new OAuth2Error("客户端查询异常，请检查数据库链接"), null));

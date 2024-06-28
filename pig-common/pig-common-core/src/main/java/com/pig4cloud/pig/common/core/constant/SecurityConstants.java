@@ -48,11 +48,6 @@ public interface SecurityConstants {
 	String FROM = "from";
 
 	/**
-	 * 请求header
-	 */
-	String HEADER_FROM_IN = FROM + "=" + FROM_IN;
-
-	/**
 	 * 默认登录URL
 	 */
 	String OAUTH_TOKEN_URL = "/oauth2/token";
@@ -61,6 +56,11 @@ public interface SecurityConstants {
 	 * grant_type
 	 */
 	String REFRESH_TOKEN = "refresh_token";
+
+	/**
+	 * password 模式
+	 */
+	String PASSWORD = "password";
 
 	/**
 	 * 手机号登录
@@ -76,11 +76,6 @@ public interface SecurityConstants {
 	 * {noop} 加密的特征码
 	 */
 	String NOOP = "{noop}";
-
-	/***
-	 * 资源服务器默认bean名称
-	 */
-	String RESOURCE_SERVER_CONFIGURER = "resourceServerConfigurerAdapter";
 
 	/**
 	 * 用户名

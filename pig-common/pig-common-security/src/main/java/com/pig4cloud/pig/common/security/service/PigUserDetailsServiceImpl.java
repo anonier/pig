@@ -20,7 +20,6 @@ import com.pig4cloud.pig.admin.api.dto.UserDTO;
 import com.pig4cloud.pig.admin.api.dto.UserInfo;
 import com.pig4cloud.pig.admin.api.feign.RemoteUserService;
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
-import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import com.pig4cloud.pig.common.core.util.R;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -59,7 +58,7 @@ public class PigUserDetailsServiceImpl implements PigUserDetailsService {
 
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUsername(username);
-		R<UserInfo> result = remoteUserService.info(userDTO, SecurityConstants.FROM_IN);
+		R<UserInfo> result = remoteUserService.info(userDTO);
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
 			cache.put(username, userDetails);

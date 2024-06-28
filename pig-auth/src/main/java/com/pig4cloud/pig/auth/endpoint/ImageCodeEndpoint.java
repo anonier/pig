@@ -2,7 +2,6 @@ package com.pig4cloud.pig.auth.endpoint;
 
 import com.pig4cloud.pig.common.core.constant.CacheConstants;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
-import com.pig4cloud.pig.common.security.annotation.Inner;
 import io.springboot.captcha.ArithmeticCaptcha;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.concurrent.TimeUnit;
  * @author lengleng
  * @date 2022/6/27
  */
-@Inner(false)
 @RestController
 @RequestMapping("/code")
 @RequiredArgsConstructor
