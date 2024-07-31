@@ -15,8 +15,8 @@
 
     <properties>
         <!-- 项目版本号 -->
-        <revision>3.8.0</revision>
-        <spring-boot.version>3.3.1</spring-boot.version>
+        <revision>3.8.1</revision>
+        <spring-boot.version>3.3.2</spring-boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -36,7 +36,7 @@
         <shardingsphere.version>5.4.1</shardingsphere.version>
         <hutool.version>5.8.29</hutool.version>
         <sentinel.version>1.8.4</sentinel.version>
-        <spring.checkstyle.plugin>0.0.41</spring.checkstyle.plugin>
+        <spring.checkstyle.plugin>0.0.42</spring.checkstyle.plugin>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
 		<redission.version>3.24.1</redission.version>
 		<validation.version>3.1.4</validation.version>

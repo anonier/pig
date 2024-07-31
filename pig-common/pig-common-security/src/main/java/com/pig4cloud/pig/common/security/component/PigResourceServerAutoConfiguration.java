@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authorization.method.PrePostTemplateDefaults;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 
@@ -71,6 +72,15 @@ public class PigResourceServerAutoConfiguration {
 	@Bean
 	public OpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2AuthorizationService authorizationService) {
 		return new PigCustomOpaqueTokenIntrospector(authorizationService);
+	}
+
+	/**
+	 * 支持自定义权限表达式
+	 * @return {@link PrePostTemplateDefaults }
+	 */
+	@Bean
+	PrePostTemplateDefaults prePostTemplateDefaults() {
+		return new PrePostTemplateDefaults();
 	}
 
 }
