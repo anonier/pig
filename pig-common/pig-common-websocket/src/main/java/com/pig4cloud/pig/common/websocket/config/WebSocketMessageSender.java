@@ -1,6 +1,9 @@
 package com.pig4cloud.pig.common.websocket.config;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
+import com.pig4cloud.pig.common.core.util.SpringContextHolder;
+import com.pig4cloud.pig.common.websocket.distribute.MessageDO;
 import com.pig4cloud.pig.common.websocket.holder.WebSocketSessionHolder;
 import com.pig4cloud.pig.common.websocket.message.JsonWebSocketMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +11,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Hccake 2021/1/4
@@ -24,15 +30,29 @@ public class WebSocketMessageSender {
 		}
 	}
 
-	public static boolean send(Object sessionKey, String message) {
-		WebSocketSession session = WebSocketSessionHolder.getSession(sessionKey);
-		if (session == null) {
-			log.info("[send] 当前 sessionKey：{} 对应 session 不在本服务中", sessionKey);
+	public static boolean send(MessageDO dto, String message) {
+//		WebSocketSession session = WebSocketSessionHolder.getSession(sessionKey);
+
+		try {
+			for (String token : dto.getTokens()) {
+				Object obj = SpringContextHolder.getBean(dto.getPath());
+				Class<?> cla = obj.getClass();
+				Field field = cla.getDeclaredField("webSocketSet");
+				field.setAccessible(true);
+				ConcurrentHashMap<String, WebSocketSession> webSocketSet = (ConcurrentHashMap) field.get(obj);
+				if (MapUtil.isEmpty(webSocketSet) || !webSocketSet.containsKey(token)) {
+					log.info("[send] 当前 token：{} 对应 token 不在本服务中", token);
+					return false;
+				} else {
+					Method method = cla.getMethod("sendString", String.class, String.class);
+					method.invoke(obj, token, dto.getMessageText());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
-		else {
-			return send(session, message);
-		}
+		return true;
 	}
 
 	public static void send(WebSocketSession session, JsonWebSocketMessage message) {
@@ -50,8 +70,7 @@ public class WebSocketMessageSender {
 		}
 		try {
 			session.sendMessage(new TextMessage(message));
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error("[send] session({}) 发送消息({}) 异常", session, message, e);
 			return false;
 		}

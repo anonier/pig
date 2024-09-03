@@ -1,5 +1,6 @@
 package com.pig4cloud.pig.common.websocket.distribute;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.pig4cloud.pig.common.websocket.config.WebSocketMessageSender;
 
@@ -13,21 +14,19 @@ public interface MessageSender {
 
 	/**
 	 * 发送消息
+	 *
 	 * @param messageDO 发送的消息
 	 */
 	default void doSend(MessageDO messageDO) {
 		Boolean needBroadcast = messageDO.getNeedBroadcast();
 		String messageText = messageDO.getMessageText();
-		List<Object> sessionKeys = messageDO.getSessionKeys();
+		List<String> tokenKeys = messageDO.getTokens();
 		if (needBroadcast != null && needBroadcast) {
 			// 广播信息
 			WebSocketMessageSender.broadcast(messageText);
-		}
-		else if (CollectionUtil.isNotEmpty(sessionKeys)) {
+		} else if (CollUtil.isNotEmpty(tokenKeys)) {
 			// 指定用户发送
-			for (Object sessionKey : sessionKeys) {
-				WebSocketMessageSender.send(sessionKey, messageText);
-			}
+			WebSocketMessageSender.send(messageDO, messageText);
 		}
 	}
 
