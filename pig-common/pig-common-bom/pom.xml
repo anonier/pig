@@ -24,18 +24,19 @@
         <fastjson.version>1.2.83_noneautotype</fastjson.version>
 		<fastjson2.version>2.0.45</fastjson2.version>
         <springdoc.version>2.6.0</springdoc.version>
-        <swagger.core.version>2.2.22</swagger.core.version>
+        <swagger.core.version>2.2.23</swagger.core.version>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <mysql.version>9.0.0</mysql.version>
         <dynamic-ds.version>4.3.1</dynamic-ds.version>
         <seata.version>1.7.0</seata.version>
-        <excel.version>3.3.0</excel.version>
+        <excel.version>3.3.1</excel.version>
         <asm.version>7.1</asm.version>
         <sms.version>3.0.0</sms.version>
         <jaxb.version>2.3.5</jaxb.version>
         <shardingsphere.version>5.4.1</shardingsphere.version>
-        <hutool.version>5.8.31</hutool.version>
+        <hutool.version>5.8.32</hutool.version>
         <sentinel.version>1.8.4</sentinel.version>
+        <common.io.version>2.16.1</common.io.version>
         <spring.checkstyle.plugin>0.0.43</spring.checkstyle.plugin>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
 		<redission.version>3.24.1</redission.version>
@@ -148,6 +149,11 @@
             </dependency>
             <dependency>
                 <groupId>com.pig4cloud</groupId>
+                <artifactId>pig-common-excel</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.pig4cloud</groupId>
                 <artifactId>pig-upms-api</artifactId>
                 <version>${revision}</version>
             </dependency>
@@ -188,6 +194,12 @@
                 <groupId>com.pig4cloud.excel</groupId>
                 <artifactId>excel-spring-boot-starter</artifactId>
                 <version>${excel.version}</version>
+            </dependency>
+            <!-- commons.io 覆盖easyexcel-->
+            <dependency>
+                <artifactId>commons-io</artifactId>
+                <groupId>commons-io</groupId>
+                <version>${common.io.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>

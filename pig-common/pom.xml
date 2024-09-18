@@ -45,5 +45,6 @@
 		<module>pig-common-api</module>
 		<module>pig-common-job</module>
 		<module>pig-common-websocket</module>
+        <module>pig-common-excel</module>
     </modules>
 </project>
