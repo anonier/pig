@@ -16,7 +16,7 @@ public class RedissonConfig {
 	public RedissonClient redissonClient(RedissonProperties redissonProperties) {
 		Config config = new Config();
 		config.useSingleServer()
-				.setAddress(redissonProperties.getHost() + ":" + redissonProperties.getPort())
+				.setAddress("redis://" + redissonProperties.getHost() + ":" + redissonProperties.getPort())
 				.setPassword(redissonProperties.getPassword())
 				.setDatabase(null == redissonProperties.getDatabase() ? 0 : redissonProperties.getDatabase())
 				.setConnectTimeout(redissonProperties.getConnectTimeout());
