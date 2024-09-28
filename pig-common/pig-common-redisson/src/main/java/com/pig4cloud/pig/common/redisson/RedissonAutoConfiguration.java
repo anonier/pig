@@ -1,4 +1,4 @@
-package com.pig4cloud.pig.common.redisson.config;
+package com.pig4cloud.pig.common.redisson;
 
 import com.pig4cloud.pig.common.redisson.properties.RedissonProperties;
 import org.redisson.Redisson;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(RedissonProperties.class)
-public class RedissonConfig {
+public class RedissonAutoConfiguration {
 
 	@Bean
 	public RedissonClient redissonClient(RedissonProperties redissonProperties) {
