@@ -1,7 +1,7 @@
-package com.pig4cloud.pig.admin.iot;
+package com.pig4cloud.pig.admin.iot.mq;
 
 import cn.hutool.core.util.RandomUtil;
-import com.pig4cloud.pig.admin.iot.util.ConnectionOptionWrapper;
+import com.pig4cloud.pig.admin.iot.mq.util.ConnectionOptionWrapper;
 import jakarta.annotation.Resource;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;

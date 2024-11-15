@@ -1,4 +1,4 @@
-package com.pig4cloud.pig.admin.iot.util;
+package com.pig4cloud.pig.admin.iot.mq.util;
 
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;

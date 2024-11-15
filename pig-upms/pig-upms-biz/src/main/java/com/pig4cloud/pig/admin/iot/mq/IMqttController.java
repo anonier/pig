@@ -1,4 +1,4 @@
-package com.pig4cloud.pig.admin.iot;
+package com.pig4cloud.pig.admin.iot.mq;
 
 
 import com.pig4cloud.pig.common.core.util.R;

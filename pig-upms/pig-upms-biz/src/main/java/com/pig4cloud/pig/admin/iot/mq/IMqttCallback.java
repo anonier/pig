@@ -1,4 +1,4 @@
-package com.pig4cloud.pig.admin.iot;
+package com.pig4cloud.pig.admin.iot.mq;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.pig4cloud.pig.admin.api.vo.MqttReceiveVo;

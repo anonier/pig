@@ -1,4 +1,4 @@
-package com.pig4cloud.pig.admin.iot.util;
+package com.pig4cloud.pig.admin.iot.mq.util;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
