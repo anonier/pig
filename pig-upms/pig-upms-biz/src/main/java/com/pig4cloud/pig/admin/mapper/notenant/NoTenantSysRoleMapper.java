@@ -17,23 +17,39 @@
  *
  */
 
-package com.pig4cloud.pig.admin.mapper;
+package com.pig4cloud.pig.admin.mapper.notenant;
 
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pig4cloud.pig.admin.api.entity.SysLog;
+import com.pig4cloud.pig.admin.api.entity.SysRole;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
-/**
- * <p>
- * 日志表 Mapper 接口
- * </p>
- *
- * @author lengleng
- * @since 2017-11-20
- */
+import java.util.List;
+
 @Mapper
 @InterceptorIgnore(tenantLine = "true")
-public interface SysLogMapper extends BaseMapper<SysLog> {
+public interface NoTenantSysRoleMapper extends BaseMapper<SysRole> {
 
+	/**
+	 * 通过用户ID，查询角色信息
+	 *
+	 * @param userId
+	 * @return
+	 */
+	@Select("<script>"
+			+ "SELECT r.role_id,\n" +
+			"r.role_name,\n" +
+			"r.role_code,\n" +
+			"r.role_desc,\n" +
+			"r.create_time,\n" +
+			"r.update_time, " +
+			"r.del_flag " +
+			"FROM sys_role r left join sys_user_role u on r.role_id = u.role_id " +
+			"WHERE " +
+			"r.del_flag = '0' " +
+			"and u.user_id = #{userId} " +
+			"</script>")
+	List<SysRole> listRolesByUserId(@Param("userId") Long userId);
 }

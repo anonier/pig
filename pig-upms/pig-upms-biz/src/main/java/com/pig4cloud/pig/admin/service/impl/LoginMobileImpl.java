@@ -1,16 +1,18 @@
 package com.pig4cloud.pig.admin.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ObjUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.pig4cloud.pig.admin.api.dto.LoginDto;
+import com.pig4cloud.pig.admin.api.entity.SysTenant;
 import com.pig4cloud.pig.admin.api.entity.SysUser;
 import com.pig4cloud.pig.admin.api.feign.RemoteApplyTokenService;
 import com.pig4cloud.pig.admin.api.vo.LoginVo;
 import com.pig4cloud.pig.admin.enums.EnumAuth;
+import com.pig4cloud.pig.admin.mapper.SysTenantMapper;
+import com.pig4cloud.pig.admin.mapper.notenant.NoTenantSysUserMapper;
 import com.pig4cloud.pig.admin.service.LoginHandler;
-import com.pig4cloud.pig.admin.service.SysUserService;
 import com.pig4cloud.pig.admin.util.Base64Util;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,18 +29,27 @@ public class LoginMobileImpl implements LoginHandler {
 	private static final String clientId = "starlab";
 	private static final String clientSecret = "starlab";
 	private final RemoteApplyTokenService remoteApplyTokenService;
-	private final SysUserService sysUserService;
+	private final NoTenantSysUserMapper sysUserMapper;
+	private final SysTenantMapper sysTenantMapper;
 
 	@Override
 	@SneakyThrows
 	public LoginDto login(LoginVo vo) {
-		SysUser sysUser = sysUserService.getOne(new LambdaQueryWrapper<SysUser>()
+		SysUser sysUser = sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>()
 				.eq(SysUser::getPhone, vo.getPhone())
-				.eq(SysUser::getDelFlag, 0)
-				.eq(SysUser::getLockFlag, 0));
-		if (ObjectUtil.isEmpty(sysUser)) {
+				.eq(SysUser::getDelFlag, 0));
+		if (ObjUtil.isEmpty(sysUser)) {
 			log.error("未查询到该用户");
 			throw new RuntimeException("未查询到该用户");
+		}
+		if ("9".equals(sysUser.getLockFlag())) {
+			log.error("该用户被停用");
+			throw new RuntimeException("该用户被停用");
+		}
+		SysTenant sysTenant = sysTenantMapper.selectById(sysUser.getTenantId());
+		if (sysTenant.getStatus() == 0) {
+			log.error("机构已关闭,用户无法登入");
+			throw new RuntimeException("机构已关闭,用户无法登入");
 		}
 		return getToken(sysUser.getUsername(), vo.getPassword());
 	}

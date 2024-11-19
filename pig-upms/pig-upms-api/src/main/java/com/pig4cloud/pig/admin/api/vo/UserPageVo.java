@@ -17,36 +17,41 @@
  *
  */
 
-package com.pig4cloud.pig.admin.api.entity;
+package com.pig4cloud.pig.admin.api.vo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pig4cloud.pig.admin.api.entity.SysRole;
 import com.pig4cloud.pig.common.mybatis.base.Face;
-//import com.pig4cloud.pig.common.mybatis.handler.FaceTypeHandler;
 import com.pig4cloud.pig.common.mybatis.handler.FaceTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * <p>
- * 用户表
- * </p>
- *
- * @author lengleng
- * @since 2017-10-29
- */
 @Data
-@Schema(description = "用户")
-@TableName(autoResultMap = true)
-public class SysUser implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class UserPageVo extends Page {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 角色ID
+	 */
+	@Schema(description = "角色id集合")
+	private List<SysRole> roleList;
+
+	/**
+	 * 岗位ID
+	 */
+	private List<Long> post;
+
+	/**
+	 * 新密码
+	 */
+	@Schema(description = "新密码")
+	private String newpassword1;
 
 	/**
 	 * 主键ID
@@ -66,18 +71,6 @@ public class SysUser implements Serializable {
 	 */
 	@Schema(description = "密码")
 	private String password;
-
-	/**
-	 * accessKey
-	 */
-	@Schema(description = "accessKey")
-	private String accessKey;
-
-	/**
-	 * secretKey
-	 */
-	@Schema(description = "secretKey")
-	private String secretKey;
 
 	/**
 	 * 随机盐
@@ -201,10 +194,34 @@ public class SysUser implements Serializable {
 	private String clientId;
 
 	/**
+	 * 身份id(学号,教师编号)
+	 */
+	@Schema(description = "学号")
+	private String identityId;
+
+	/**
+	 * 卡编号
+	 */
+	@Schema(description = "卡编号")
+	private String card;
+
+	/**
+	 * 班级id
+	 */
+	@Schema(description = "班级id")
+	private Long classId;
+
+	/**
 	 * 租户id
 	 */
 	@Schema(description = "租户id")
 	private Long tenantId;
+
+	/**
+	 * 性别 1男 2女
+	 */
+	@Schema(description = "性别")
+	private Integer sex;
 
 	/**
 	 * 人脸
@@ -212,10 +229,4 @@ public class SysUser implements Serializable {
 	@Schema(description = "人脸")
 	@TableField(typeHandler = FaceTypeHandler.class)
 	private List<Face> face;
-
-	/**
-	 * 卡编号
-	 */
-	@Schema(description = "卡编号")
-	private String card;
 }

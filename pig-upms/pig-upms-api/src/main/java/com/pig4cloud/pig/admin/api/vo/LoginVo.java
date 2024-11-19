@@ -47,4 +47,14 @@ public class LoginVo implements Serializable {
 	private String type;
 
 	private MultipartFile file;
+
+	/**
+	 * accessKey
+	 */
+	private String accessKey;
+
+	/**
+	 * secretKey
+	 */
+	private String secretKey;
 }

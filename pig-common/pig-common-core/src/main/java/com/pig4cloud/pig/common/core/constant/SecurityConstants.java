@@ -78,6 +78,16 @@ public interface SecurityConstants {
 	String CARD = "card";
 
 	/**
+	 * 第三方登录
+	 */
+	String THIRD = "third";
+
+	/**
+	 * secretKey
+	 */
+	String SECRET_KEY = "secretKey";
+
+	/**
 	 * {bcrypt} 加密的特征码
 	 */
 	String BCRYPT = "{bcrypt}";

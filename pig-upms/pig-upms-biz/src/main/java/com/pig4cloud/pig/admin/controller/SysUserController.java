@@ -79,6 +79,7 @@ public class SysUserController {
 				.eq(StrUtil.isNotBlank(dto.getUsername()), SysUser::getUsername, dto.getUsername())
 				.eq(StrUtil.isNotBlank(dto.getPhone()), SysUser::getPhone, dto.getPhone())
 				.eq(ObjUtil.isNotNull(dto.getUserId()), SysUser::getUserId, dto.getUserId())
+				.eq(StrUtil.isNotBlank(dto.getAccessKey()), SysUser::getAccessKey, dto.getAccessKey())
 				.eq(ObjUtil.isNotNull(dto.getCard()), SysUser::getCard, dto.getCard())
 				.eq(SysUser::getDelFlag, 0)
 				.eq(SysUser::getLockFlag, 0));

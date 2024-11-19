@@ -17,6 +17,7 @@
 
 package com.pig4cloud.pig.admin.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pig4cloud.pig.admin.api.entity.SysFile;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,6 +29,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2019-06-18 17:18:42
  */
 @Mapper
+@InterceptorIgnore(tenantLine = "true")
 public interface SysFileMapper extends BaseMapper<SysFile> {
 
 }

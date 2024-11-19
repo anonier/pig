@@ -16,6 +16,7 @@
  */
 package com.pig4cloud.pig.admin.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pig4cloud.pig.admin.api.entity.SysPublicParam;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,6 +28,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2019-04-29
  */
 @Mapper
+@InterceptorIgnore(tenantLine = "true")
 public interface SysPublicParamMapper extends BaseMapper<SysPublicParam> {
 
 }

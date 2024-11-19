@@ -137,6 +137,7 @@ public class AuthorizationServerConfiguration {
 	public AuthenticationConverter accessTokenRequestConverter() {
 		return new DelegatingAuthenticationConverter(Arrays.asList(
 				new OAuth2ResourceOwnerPasswordAuthenticationConverter(),
+				new OAuth2ResourceOwnerThirdAuthenticationConverter(),
 				new OAuth2ResourceOwnerSmsAuthenticationConverter(),
 				new OAuth2RefreshTokenAuthenticationConverter(),
 				new OAuth2ResourceOwnerFaceAuthenticationConverter(),
@@ -169,15 +170,14 @@ public class AuthorizationServerConfiguration {
 		OAuth2ResourceOwnerCardAuthenticationProvider resourceOwnerCardAuthenticationProvider = new OAuth2ResourceOwnerCardAuthenticationProvider(
 				authenticationManager, authorizationService, oAuth2TokenGenerator());
 
-		// 处理 UsernamePasswordAuthenticationToken
+		OAuth2ResourceOwnerThirdAuthenticationProvider resourceOwnerThirdAuthenticationProvider = new OAuth2ResourceOwnerThirdAuthenticationProvider(
+				authenticationManager, authorizationService, oAuth2TokenGenerator());
+
 		http.authenticationProvider(new PigDaoAuthenticationProvider());
-		// 处理 OAuth2ResourceOwnerPasswordAuthenticationToken
 		http.authenticationProvider(resourceOwnerPasswordAuthenticationProvider);
-		// 处理 OAuth2ResourceOwnerSmsAuthenticationToken
 		http.authenticationProvider(resourceOwnerSmsAuthenticationProvider);
-		// 处理 OAuth2ResourceOwnerSmsAuthenticationToken
 		http.authenticationProvider(resourceOwnerFaceAuthenticationProvider);
-		// 处理 OAuth2ResourceOwnerCardAuthenticationToken
 		http.authenticationProvider(resourceOwnerCardAuthenticationProvider);
+		http.authenticationProvider(resourceOwnerThirdAuthenticationProvider);
 	}
 }

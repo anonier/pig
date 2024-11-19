@@ -35,9 +35,9 @@ import org.apache.ibatis.annotations.Select;
  * @since 2018-05-15
  */
 @Mapper
+@InterceptorIgnore(tenantLine = "true")
 public interface SysOauthClientDetailsMapper extends BaseMapper<SysOauthClientDetails> {
 
-	@InterceptorIgnore(tenantLine = "true")
 	@Select("SELECT * FROM sys_oauth_client_details WHERE del_flag = '0' AND client_id = #{clientId} ")
 	SysOauthClientDetails getByClientId(@Param("clientId") String clientId);
 }

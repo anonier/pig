@@ -16,6 +16,7 @@
  */
 package com.pig4cloud.pig.admin.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.pig4cloud.pig.admin.api.entity.SysDictItem;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,6 +28,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2019/03/19
  */
 @Mapper
+@InterceptorIgnore(tenantLine = "true")
 public interface SysDictItemMapper extends BaseMapper<SysDictItem> {
 
 }

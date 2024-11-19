@@ -130,6 +130,9 @@ public class PigDaoAuthenticationProvider extends AbstractUserDetailsAuthenticat
 			if (grantType.equals(SecurityConstants.CARD)) {
 				sysUser.setCard(username);
 			}
+			if (grantType.equals(SecurityConstants.THIRD)) {
+				sysUser.setUsername(username);
+			}
 			UserDetails loadedUser = optional.get().loadUserByUser(sysUser);
 			if (loadedUser == null) {
 				throw new InternalAuthenticationServiceException(

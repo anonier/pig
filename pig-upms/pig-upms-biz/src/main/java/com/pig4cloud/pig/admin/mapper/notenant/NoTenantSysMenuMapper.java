@@ -17,23 +17,24 @@
  *
  */
 
-package com.pig4cloud.pig.admin.mapper;
+package com.pig4cloud.pig.admin.mapper.notenant;
 
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pig4cloud.pig.admin.api.entity.SysLog;
+import com.pig4cloud.pig.admin.api.entity.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * <p>
- * 日志表 Mapper 接口
- * </p>
- *
- * @author lengleng
- * @since 2017-11-20
- */
+import java.util.List;
+
 @Mapper
 @InterceptorIgnore(tenantLine = "true")
-public interface SysLogMapper extends BaseMapper<SysLog> {
+public interface NoTenantSysMenuMapper extends BaseMapper<SysMenu> {
 
+	/**
+	 * 通过角色编号查询菜单
+	 *
+	 * @param roleId 角色ID
+	 * @return
+	 */
+	List<SysMenu> listMenusByRoleId(Long roleId);
 }

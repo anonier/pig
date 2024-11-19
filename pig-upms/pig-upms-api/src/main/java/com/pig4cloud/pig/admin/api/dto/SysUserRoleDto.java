@@ -17,12 +17,11 @@
  *
  */
 
-package com.pig4cloud.pig.admin.api.entity;
+package com.pig4cloud.pig.admin.api.dto;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pig4cloud.pig.common.mybatis.base.Face;
-//import com.pig4cloud.pig.common.mybatis.handler.FaceTypeHandler;
 import com.pig4cloud.pig.common.mybatis.handler.FaceTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -43,7 +42,7 @@ import java.util.List;
 @Data
 @Schema(description = "用户")
 @TableName(autoResultMap = true)
-public class SysUser implements Serializable {
+public class SysUserRoleDto implements Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
@@ -66,18 +65,6 @@ public class SysUser implements Serializable {
 	 */
 	@Schema(description = "密码")
 	private String password;
-
-	/**
-	 * accessKey
-	 */
-	@Schema(description = "accessKey")
-	private String accessKey;
-
-	/**
-	 * secretKey
-	 */
-	@Schema(description = "secretKey")
-	private String secretKey;
 
 	/**
 	 * 随机盐
@@ -201,10 +188,34 @@ public class SysUser implements Serializable {
 	private String clientId;
 
 	/**
+	 * 身份id(学号,教师编号)
+	 */
+	@Schema(description = "学号")
+	private String identityId;
+
+	/**
+	 * 卡编号
+	 */
+	@Schema(description = "卡编号")
+	private String card;
+
+	/**
+	 * 班级id
+	 */
+	@Schema(description = "班级id")
+	private Long classId;
+
+	/**
 	 * 租户id
 	 */
 	@Schema(description = "租户id")
 	private Long tenantId;
+
+	/**
+	 * 性别 1男 2女
+	 */
+	@Schema(description = "性别")
+	private Integer sex;
 
 	/**
 	 * 人脸
@@ -214,8 +225,8 @@ public class SysUser implements Serializable {
 	private List<Face> face;
 
 	/**
-	 * 卡编号
+	 * 中间表id
 	 */
-	@Schema(description = "卡编号")
-	private String card;
+	@Schema(description = "中间表id")
+	private Long userRoleId;
 }

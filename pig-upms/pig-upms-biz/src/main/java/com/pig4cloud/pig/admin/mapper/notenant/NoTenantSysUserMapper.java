@@ -21,19 +21,11 @@ package com.pig4cloud.pig.admin.mapper.notenant;
 
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pig4cloud.pig.admin.api.entity.SysLog;
+import com.pig4cloud.pig.admin.api.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * <p>
- * 日志表 Mapper 接口
- * </p>
- *
- * @author lengleng
- * @since 2017-11-20
- */
+
 @Mapper
 @InterceptorIgnore(tenantLine = "true")
-public interface NoTenantLogMapper extends BaseMapper<SysLog> {
-
+public interface NoTenantSysUserMapper extends BaseMapper<SysUser> {
 }

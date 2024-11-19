@@ -16,9 +16,13 @@ public enum EnumAuth {
 
 	PASSWORD("password"),
 
+	SECRET_KEY("secretKey"),
+
 	FACE("face"),
 
 	CARD("card"),
+
+	THIRD("third"),
 
 	MOBILE("mobile"),
 
@@ -28,9 +32,13 @@ public enum EnumAuth {
 
 	LOGIN_SMS("login_sms"),
 
-	LOGIN_CARD("login_card"),
-
 	LOGIN_USERNAME("login_username"),
+
+	LOGIN_AUTH("login_auth"),
+
+	LOGIN_FACE("login_face"),
+
+	LOGIN_CARD("login_card"),
 
 	REGISTER_MOBILE("register_mobile"),
 
