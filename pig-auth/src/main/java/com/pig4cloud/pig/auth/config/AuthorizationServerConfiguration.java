@@ -32,6 +32,8 @@ import com.pig4cloud.pig.auth.support.password.OAuth2ResourceOwnerPasswordAuthen
 import com.pig4cloud.pig.auth.support.password.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import com.pig4cloud.pig.auth.support.sms.OAuth2ResourceOwnerSmsAuthenticationConverter;
 import com.pig4cloud.pig.auth.support.sms.OAuth2ResourceOwnerSmsAuthenticationProvider;
+import com.pig4cloud.pig.auth.support.third.OAuth2ResourceOwnerThirdAuthenticationConverter;
+import com.pig4cloud.pig.auth.support.third.OAuth2ResourceOwnerThirdAuthenticationProvider;
 import com.pig4cloud.pig.common.core.constant.SecurityConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
