@@ -18,18 +18,12 @@
 package com.pig4cloud.pig.common.file.core;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/**
- * 视觉
- */
 @Data
-@ConfigurationProperties(prefix = "visual")
-public class VisualProperties {
+public class ConfigProperties {
 
-    private String accessKeyId;
-
-    private String accessSecretKey;
-
-    private String dbName;
+	/**
+	 * oss 文件配置信息
+	 */
+	private OssConfigProperties oss;
 }

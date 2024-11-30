@@ -1,16 +1,21 @@
 package com.pig4cloud.pig.common.file.local;
 
 import cn.hutool.core.io.FileUtil;
+import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.pig4cloud.pig.common.file.core.ConfigProperties;
 import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.core.FileTemplate;
+import com.pig4cloud.pig.common.file.oss.OssProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +30,21 @@ import java.util.stream.Collectors;
 public class LocalFileTemplate implements FileTemplate {
 
 	private final FileProperties properties;
+
+	@Override
+	public AssumeRoleResponse getStsToken(ConfigProperties fileProperties) {
+		return null;
+	}
+
+	@Override
+	public URL uploadEncrypt(OssProperties ossProperties, MultipartFile file) {
+		return null;
+	}
+
+	@Override
+	public URL upload(OssProperties ossProperties, MultipartFile file) {
+		return null;
+	}
 
 	/**
 	 * 创建bucket

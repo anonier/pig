@@ -17,11 +17,14 @@
 
 package com.pig4cloud.pig.common.file.oss.http;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.pig4cloud.pig.common.file.core.ConfigProperties;
 import com.pig4cloud.pig.common.file.core.FileProperties;
+import com.pig4cloud.pig.common.file.oss.OssProperties;
 import com.pig4cloud.pig.common.file.oss.service.OssTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
@@ -60,11 +63,12 @@ public class OssEndpoint {
 	 */
 	@GetMapping("/getHzStsToken")
 	public AssumeRoleResponse getHzStsToken() {
-		properties.getOss().setRoleArn(properties.getOss().getHzAssessRoleArn());
-		properties.getOss().setStsEndpoint(properties.getOss().getHzStsEndpoint());
-		properties.getOss().setBucket(properties.getOss().getHzBucket());
-		properties.getOss().setPolicy(properties.getOss().getHzAssessPolicy());
-		return template.getStsToken(properties);
+		ConfigProperties configProperties = BeanUtil.copyProperties(properties, ConfigProperties.class);
+		configProperties.getOss().setRoleArn(configProperties.getOss().getHzAssessRoleArn());
+		configProperties.getOss().setStsEndpoint(configProperties.getOss().getHzStsEndpoint());
+		configProperties.getOss().setBucket(configProperties.getOss().getHzBucket());
+		configProperties.getOss().setPolicy(configProperties.getOss().getHzAssessPolicy());
+		return template.getStsToken(configProperties);
 	}
 
 	/**
@@ -74,11 +78,12 @@ public class OssEndpoint {
 	 */
 	@GetMapping("/getShStsToken")
 	public AssumeRoleResponse getShStsToken() {
-		properties.getOss().setRoleArn(properties.getOss().getShFaceRoleArn());
-		properties.getOss().setStsEndpoint(properties.getOss().getShStsEndpoint());
-		properties.getOss().setBucket(properties.getOss().getShBucket());
-		properties.getOss().setPolicy(properties.getOss().getShFacePolicy());
-		return template.getStsToken(properties);
+		ConfigProperties configProperties = BeanUtil.copyProperties(properties, ConfigProperties.class);
+		configProperties.getOss().setRoleArn(configProperties.getOss().getShFaceRoleArn());
+		configProperties.getOss().setStsEndpoint(configProperties.getOss().getShStsEndpoint());
+		configProperties.getOss().setBucket(configProperties.getOss().getShBucket());
+		configProperties.getOss().setPolicy(configProperties.getOss().getShFacePolicy());
+		return template.getStsToken(configProperties);
 	}
 
 	/**
@@ -89,7 +94,7 @@ public class OssEndpoint {
 	 */
 	@PostMapping("/upload")
 	public String upload(@RequestParam("picture") MultipartFile file) {
-		return template.upload(file,properties);
+		return template.upload(BeanUtil.copyProperties(properties.getOss(), OssProperties.class), file).toString();
 	}
 
 	/**
@@ -130,8 +135,7 @@ public class OssEndpoint {
 	@PostMapping("/object/{bucketName}")
 	public S3Object createObject(@RequestBody MultipartFile object, @PathVariable String bucketName) {
 		String name = object.getOriginalFilename();
-		@Cleanup
-		InputStream inputStream = object.getInputStream();
+		@Cleanup InputStream inputStream = object.getInputStream();
 		template.putObject(bucketName, name, inputStream, object.getSize(), object.getContentType());
 		return template.getObjectInfo(bucketName, name);
 
@@ -139,10 +143,8 @@ public class OssEndpoint {
 
 	@SneakyThrows
 	@PostMapping("/object/{bucketName}/{objectName}")
-	public S3Object createObject(@RequestBody MultipartFile object, @PathVariable String bucketName,
-								 @PathVariable String objectName) {
-		@Cleanup
-		InputStream inputStream = object.getInputStream();
+	public S3Object createObject(@RequestBody MultipartFile object, @PathVariable String bucketName, @PathVariable String objectName) {
+		@Cleanup InputStream inputStream = object.getInputStream();
 		template.putObject(bucketName, objectName, inputStream, object.getSize(), object.getContentType());
 		return template.getObjectInfo(bucketName, objectName);
 
@@ -158,8 +160,7 @@ public class OssEndpoint {
 
 	@SneakyThrows
 	@GetMapping("/object/{bucketName}/{objectName}/{expires}")
-	public Map<String, Object> getObject(@PathVariable String bucketName, @PathVariable String objectName,
-										 @PathVariable Integer expires) {
+	public Map<String, Object> getObject(@PathVariable String bucketName, @PathVariable String objectName, @PathVariable Integer expires) {
 		Map<String, Object> responseBody = new HashMap<>(8);
 		// Put Object info
 		responseBody.put("bucket", bucketName);

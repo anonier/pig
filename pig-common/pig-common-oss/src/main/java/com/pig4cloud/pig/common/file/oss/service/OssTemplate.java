@@ -41,6 +41,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
+import com.pig4cloud.pig.common.file.core.ConfigProperties;
 import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.core.FileTemplate;
 import com.pig4cloud.pig.common.file.oss.OssProperties;
@@ -73,7 +74,7 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 	private final FileProperties properties;
 	private AmazonS3 amazonS3;
 
-	public AssumeRoleResponse getStsToken(FileProperties fileProperties) {
+	public AssumeRoleResponse getStsToken(ConfigProperties fileProperties) {
 		// STS接入地址，例如sts.cn-hangzhou.aliyuncs.com。
 		// 从环境变量中获取步骤1生成的RAM用户的访问密钥（AccessKey ID和AccessKey Secret）。
 		// 从环境变量中获取步骤3生成的RAM角色的RamRoleArn。
@@ -122,9 +123,7 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 	}
 
 	public URL uploadEncrypt(OssProperties ossProperties, MultipartFile file) {
-		// Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
 		String endpoint = ossProperties.getEndpoint();
-		// 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
 		DefaultCredentialProvider credentialsProvider;
 		try {
 			credentialsProvider = CredentialsProviderFactory.newDefaultCredentialProvider(ossProperties.getAccessKey(), ossProperties.getSecretKey());
@@ -132,23 +131,14 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 			log.error("EnvironmentVariableCredentialsProvider异常" + e);
 			throw new RuntimeException("EnvironmentVariableCredentialsProvider异常", e);
 		}
-		// 填写Bucket名称，例如examplebucket。
 		String bucketName = ossProperties.getBucket();
-		// 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
 		String objectName = ossProperties.getPath() + "/" + RandomUtil.randomString(128) + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-		// 填写本地文件的完整路径，例如D:\\localpath\\examplefile.txt。
-		// 如果未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件流。
-//        String filePath = "D:\\localpath\\examplefile.txt";
-
-		// 创建OSSClient实例。
 		OSS ossClient = new OSSClientBuilder().build(endpoint, credentialsProvider);
 
 		try {
 			byte[] byteArr = file.getBytes();
 			InputStream inputStream = new ByteArrayInputStream(byteArr);
-			// 创建PutObjectRequest对象。
 			com.aliyun.oss.model.PutObjectRequest putObjectRequest = new com.aliyun.oss.model.PutObjectRequest(bucketName, objectName, inputStream);
-			// 创建PutObject请求。
 			ossClient.putObject(putObjectRequest);
 			String key = objectName;
 			Date expiration = new Date(new Date().getTime() + 60 * 1000);
@@ -176,19 +166,24 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 	 * @param file
 	 * @return
 	 */
-	public String upload(MultipartFile file, FileProperties fileProperties) {
+	public URL upload(OssProperties ossProperties, MultipartFile file) {
 		try {
 			String fileName = file.getOriginalFilename();
-			String prefix = fileName.substring(fileName.lastIndexOf("."));
+			String prefix = null;
+			if (fileName != null) {
+				prefix = fileName.substring(fileName.lastIndexOf("."));
+			}
 
 			try {
-				File tempFile = File.createTempFile(fileName, prefix);
+				File tempFile = File.createTempFile(RandomUtil.randomString(128), prefix);
 				file.transferTo(tempFile);
-				amazonS3.putObject(new PutObjectRequest(fileProperties.getOss().getBucket(), "doctor/" + fileName, tempFile)
+				fileName = RandomUtil.randomString(128) + file.getOriginalFilename()
+						.substring(file.getOriginalFilename().lastIndexOf("."));
+				amazonS3.putObject(new PutObjectRequest(ossProperties.getBucket()
+						, ossProperties.getPath() + "/" + fileName, tempFile)
 						.withCannedAcl(CannedAccessControlList.PublicRead));
-				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(fileProperties.getOss().getBucket(), fileName);
-				URL url = amazonS3.generatePresignedUrl(urlRequest);
-				return url.toString();
+				GeneratePresignedUrlRequest urlRequest = new GeneratePresignedUrlRequest(ossProperties.getBucket(), ossProperties.getPath() + "/" +fileName);
+				return amazonS3.generatePresignedUrl(urlRequest);
 			} catch (Exception e) {
 				throw new RuntimeException("", e);
 			}
@@ -367,7 +362,7 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 		clientConfiguration.setMaxConnections(properties.getOss().getMaxConnections());
 
 		AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(
-				properties.getOss().getEndpoint(), properties.getOss().getRegion());
+				properties.getOss().getHzEndpoint(), properties.getOss().getRegion());
 		AWSCredentials awsCredentials = new BasicAWSCredentials(properties.getOss().getAccessKey(),
 				properties.getOss().getSecretKey());
 		AWSCredentialsProvider awsCredentialsProvider = new AWSStaticCredentialsProvider(awsCredentials);

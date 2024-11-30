@@ -15,10 +15,9 @@
  * Author: lengleng (wangiegie@gmail.com)
  */
 
-package com.pig4cloud.pig.common.file.oss;
+package com.pig4cloud.pig.common.file.core;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * aws 配置信息
@@ -32,8 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * bucket 设置公共读权限
  */
 @Data
-@ConfigurationProperties(prefix = "oss")
-public class OssProperties {
+public class OssConfigProperties {
 
 	/**
 	 * 对象存储服务的URL

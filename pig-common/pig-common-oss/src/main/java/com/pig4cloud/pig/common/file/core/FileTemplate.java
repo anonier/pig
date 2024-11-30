@@ -1,11 +1,15 @@
 package com.pig4cloud.pig.common.file.core;
 
+import com.aliyuncs.auth.sts.AssumeRoleResponse;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.pig4cloud.pig.common.file.oss.OssProperties;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -15,6 +19,12 @@ import java.util.List;
  * @date 2022/4/19
  */
 public interface FileTemplate extends InitializingBean {
+
+	AssumeRoleResponse getStsToken(ConfigProperties fileProperties);
+
+	URL uploadEncrypt(OssProperties ossProperties, MultipartFile file);
+
+	URL upload(OssProperties ossProperties, MultipartFile file);
 
 	/**
 	 * 创建bucket
