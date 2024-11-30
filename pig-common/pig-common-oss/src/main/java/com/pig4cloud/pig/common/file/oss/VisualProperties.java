@@ -15,42 +15,21 @@
  * Author: lengleng (wangiegie@gmail.com)
  */
 
-package com.pig4cloud.pig.common.file.core;
+package com.pig4cloud.pig.common.file.oss;
 
-import com.pig4cloud.pig.common.file.local.LocalFileProperties;
-import com.pig4cloud.pig.common.file.oss.OssProperties;
-import com.pig4cloud.pig.common.file.oss.VisualProperties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * 文件 配置信息
- *
- * @author lengleng
- * <p>
- * bucket 设置公共读权限
+ * 视觉
  */
 @Data
-@ConfigurationProperties(prefix = "file")
-public class FileProperties {
+@ConfigurationProperties(prefix = "visual")
+public class VisualProperties {
 
-	/**
-	 * 默认的存储桶名称
-	 */
-	private String bucketName = "local";
+    private String accessKeyId;
 
-	/**
-	 * 本地文件配置信息
-	 */
-	private LocalFileProperties local;
+    private String accessSecretKey;
 
-	/**
-	 * oss 文件配置信息
-	 */
-	private OssProperties oss;
-
-	/**
-	 * 视觉平台
-	 */
-	private VisualProperties visual;
+    private String dbName;
 }

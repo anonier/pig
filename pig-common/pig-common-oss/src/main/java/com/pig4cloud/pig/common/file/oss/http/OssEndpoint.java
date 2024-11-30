@@ -25,7 +25,6 @@ import com.pig4cloud.pig.common.file.core.FileProperties;
 import com.pig4cloud.pig.common.file.oss.service.OssTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
@@ -46,7 +45,7 @@ import java.util.Map;
  * oss.info
  */
 @RestController
-@RequiredArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/oss")
 @ConditionalOnProperty(name = "file.oss.info", havingValue = "true")
 public class OssEndpoint {
@@ -54,11 +53,40 @@ public class OssEndpoint {
 	private final FileProperties properties;
 	private final OssTemplate template;
 
-	@GetMapping("/getStsToken")
-	public AssumeRoleResponse getStsToken() {
+	/**
+	 * 获取杭州sts凭证
+	 *
+	 * @return
+	 */
+	@GetMapping("/getHzStsToken")
+	public AssumeRoleResponse getHzStsToken() {
+		properties.getOss().setRoleArn(properties.getOss().getHzAssessRoleArn());
+		properties.getOss().setStsEndpoint(properties.getOss().getHzStsEndpoint());
+		properties.getOss().setBucket(properties.getOss().getHzBucket());
+		properties.getOss().setPolicy(properties.getOss().getHzAssessPolicy());
 		return template.getStsToken(properties);
 	}
 
+	/**
+	 * 获取上海sts凭证
+	 *
+	 * @return
+	 */
+	@GetMapping("/getShStsToken")
+	public AssumeRoleResponse getShStsToken() {
+		properties.getOss().setRoleArn(properties.getOss().getShFaceRoleArn());
+		properties.getOss().setStsEndpoint(properties.getOss().getShStsEndpoint());
+		properties.getOss().setBucket(properties.getOss().getShBucket());
+		properties.getOss().setPolicy(properties.getOss().getShFacePolicy());
+		return template.getStsToken(properties);
+	}
+
+	/**
+	 * 上传文件图片
+	 *
+	 * @param file
+	 * @return
+	 */
 	@PostMapping("/upload")
 	public String upload(@RequestParam("picture") MultipartFile file) {
 		return template.upload(file,properties);
@@ -69,7 +97,7 @@ public class OssEndpoint {
 	 */
 	@SneakyThrows
 	@PostMapping("/bucket/{bucketName}")
-	public Bucket createBucket(@PathVariable String bucketName) {
+	public Bucket createBucker(@PathVariable String bucketName) {
 
 		template.createBucket(bucketName);
 		return template.getBucket(bucketName).get();
@@ -112,7 +140,7 @@ public class OssEndpoint {
 	@SneakyThrows
 	@PostMapping("/object/{bucketName}/{objectName}")
 	public S3Object createObject(@RequestBody MultipartFile object, @PathVariable String bucketName,
-			@PathVariable String objectName) {
+								 @PathVariable String objectName) {
 		@Cleanup
 		InputStream inputStream = object.getInputStream();
 		template.putObject(bucketName, objectName, inputStream, object.getSize(), object.getContentType());
@@ -131,7 +159,7 @@ public class OssEndpoint {
 	@SneakyThrows
 	@GetMapping("/object/{bucketName}/{objectName}/{expires}")
 	public Map<String, Object> getObject(@PathVariable String bucketName, @PathVariable String objectName,
-			@PathVariable Integer expires) {
+										 @PathVariable Integer expires) {
 		Map<String, Object> responseBody = new HashMap<>(8);
 		// Put Object info
 		responseBody.put("bucket", bucketName);

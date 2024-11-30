@@ -323,7 +323,7 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 	 * API Documentation</a>
 	 */
 	public PutObjectResult putObject(String bucketName, String objectName, InputStream stream, long size,
-									 String contextType) throws Exception {
+			String contextType) throws Exception {
 		// String fileName = getFileName(objectName);
 		byte[] bytes = IOUtils.toByteArray(stream);
 		ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -372,12 +372,12 @@ public class OssTemplate implements InitializingBean, FileTemplate {
 				properties.getOss().getSecretKey());
 		AWSCredentialsProvider awsCredentialsProvider = new AWSStaticCredentialsProvider(awsCredentials);
 		this.amazonS3 = AmazonS3Client.builder()
-				.withEndpointConfiguration(endpointConfiguration)
-				.withClientConfiguration(clientConfiguration)
-				.withCredentials(awsCredentialsProvider)
-				.disableChunkedEncoding()
-				.withPathStyleAccessEnabled(properties.getOss().getPathStyleAccess())
-				.build();
+			.withEndpointConfiguration(endpointConfiguration)
+			.withClientConfiguration(clientConfiguration)
+			.withCredentials(awsCredentialsProvider)
+			.disableChunkedEncoding()
+			.withPathStyleAccessEnabled(properties.getOss().getPathStyleAccess())
+			.build();
 	}
 
 }
