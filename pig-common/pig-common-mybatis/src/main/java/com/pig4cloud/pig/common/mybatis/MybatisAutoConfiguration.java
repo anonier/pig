@@ -26,11 +26,17 @@ import com.pig4cloud.pig.common.mybatis.resolver.SqlFilterArgumentResolver;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -78,7 +84,19 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 			public boolean ignoreTable(String tableName) {
 				return "sys_tenant".equals(tableName);
 			}
-		}));
+		})
+		//兼容非租户版本,若为租户版本,需删除避免攻击
+		{
+			@Override
+			public void beforeQuery(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+				// 获取租户ID
+				Long tenantId = TenantContextHolder.getTenantId();
+				if (tenantId != null) {
+					super.beforeQuery(executor, ms, parameter, rowBounds, resultHandler, boundSql);
+				}
+
+			}
+		});
 		interceptor.addInnerInterceptor(new PigPaginationInnerInterceptor());
 		return interceptor;
 	}
