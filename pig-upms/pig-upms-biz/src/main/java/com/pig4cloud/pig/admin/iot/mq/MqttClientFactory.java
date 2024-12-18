@@ -32,7 +32,7 @@ public class MqttClientFactory {
 	@Value("${mqtt.secretKey}")
 	private String secretKey;
 
-	@Bean("myMqttClient")
+//	@Bean("myMqttClient")
 	public MqttClient connect() throws MqttException, NoSuchAlgorithmException, InvalidKeyException {
 		/**
 		 * MQ4IOT clientId，由业务系统分配，需要保证每个 tcp 连接都不一样，保证全局唯一，如果不同的客户端对象（tcp 连接）使用了相同的 clientId 会导致连接异常断开。
