@@ -23,12 +23,12 @@
         <git.commit.plugin>9.0.1</git.commit.plugin>
         <fastjson.version>1.2.83_noneautotype</fastjson.version>
         <springdoc.version>2.7.0</springdoc.version>
-        <swagger.core.version>2.2.26</swagger.core.version>
+        <swagger.core.version>2.2.27</swagger.core.version>
         <mybatis-plus.version>3.5.9</mybatis-plus.version>
         <mysql.version>9.0.0</mysql.version>
         <dynamic-ds.version>4.3.1</dynamic-ds.version>
         <seata.version>1.7.0</seata.version>
-        <excel.version>3.3.1</excel.version>
+        <excel.version>3.4.0</excel.version>
         <asm.version>7.1</asm.version>
         <sms.version>3.0.0</sms.version>
         <jaxb.version>2.3.5</jaxb.version>

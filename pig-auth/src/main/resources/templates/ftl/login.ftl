@@ -1,72 +1,41 @@
-<!doctype html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <#-- 内网部署下载相对应放文件放在 resource目录离线加载-->
-	<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-<!-- component -->
-<div
-		class="bg-purple-900 absolute top-0 left-0 bg-gradient-to-b from-gray-900 via-gray-900 to-purple-800 bottom-0 leading-5 h-full w-full overflow-hidden">
+<#assign content>
+    <div class="mb-8 text-center">
+        <svg class="w-16 h-16 mx-auto mb-4 text-purple-600 dark:text-purple-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 14.5V16.5M7 10.0288C7.47142 10.0288 7.86284 9.63734 7.86284 9.16592C7.86284 8.69449 7.47142 8.30307 7 8.30307C6.52858 8.30307 6.13716 8.69449 6.13716 9.16592C6.13716 9.63734 6.52858 10.0288 7 10.0288ZM17 10.0288C17.4714 10.0288 17.8628 9.63734 17.8628 9.16592C17.8628 8.69449 17.4714 8.30307 17 8.30307C16.5286 8.30307 16.1372 8.69449 16.1372 9.16592C16.1372 9.63734 16.5286 10.0288 17 10.0288ZM12 12.5C13.6569 12.5 15 11.1569 15 9.5C15 7.84315 13.6569 6.5 12 6.5C10.3431 6.5 9 7.84315 9 9.5C9 11.1569 10.3431 12.5 12 12.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M17.6972 19.7C16.0993 18.0307 14.125 17 12 17C9.87499 17 7.90072 18.0307 6.30283 19.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">安全便捷的企业级认证服务</p>
+    </div>
 
-</div>
-<div
-		class="relative   min-h-screen  sm:flex sm:flex-row  justify-center bg-transparent rounded-3xl shadow-xl">
-	<div class="flex-col flex  self-center lg:px-14 sm:max-w-4xl xl:max-w-md  z-10">
-		<div class="self-start hidden lg:flex flex-col  text-gray-300">
-			<p class="pr-3 text-sm opacity-75">
-				为企业提供一套集中式的账号、权限、认证、审计工具，帮助企业打通身份数据孤岛，实现“一个账号、一次认证、多点通行”的效果，强化企业安全体系的同时，提升组织管理效率，助力企业数字化升级转型。</p>
-		</div>
-	</div>
-	<div class="flex justify-center self-center  z-10">
-		<div class="p-12 bg-white mx-auto rounded-3xl w-96 ">
-			<div class="mb-7">
-				<h3 class="font-semibold text-2xl text-gray-800 text-center">统一身份平台</h3>
-			</div>
-			<form class="form-signin" action="/token/form" method="post">
-				<input type="hidden" name="client_id" class="form-control" value="pig" placeholder="所属客户端">
-				<input type="hidden" name="grant_type" class="form-control" value="password" placeholder="所属客户端">
-				<div class="space-y-6">
-					<div class="">
-						<input class=" w-full text-sm  px-4 py-3 bg-gray-200 focus:bg-gray-100 border  border-gray-200 rounded-lg focus:outline-none focus:border-purple-400"
-						       type="text" placeholder="账号" name="username" required>
-					</div>
+    <form class="form-signin" action="${request.contextPath}/oauth2/form" method="post">
+        <input type="hidden" name="client_id" value="pig">
+        <input type="hidden" name="grant_type" value="password">
+        <div class="space-y-6">
+            <div class="">
+                <input class="w-full text-sm px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-purple-400 dark:focus:border-purple-500 dark:text-gray-300 transition-colors"
+                       type="text" placeholder="账号" name="username" required>
+            </div>
 
+            <div class="relative">
+                <input placeholder="密码" type="password" name="password" required
+                       class="w-full text-sm px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:border-purple-400 dark:focus:border-purple-500 dark:text-gray-300 transition-colors">
+            </div>
 
-					<div class="relative">
-						<input placeholder="密码" type="password" name="password" required
-						       class=" w-full text-sm  px-4 py-3 bg-gray-200 focus:bg-gray-100 border  border-gray-200 rounded-lg focus:outline-none focus:border-purple-400">
-					</div>
+            <#if error??>
+                <div class="relative text-center">
+                    <span class="text-red-600 dark:text-red-400">${error}</span>
+                </div>
+            </#if>
 
-                    <#if error??>
-						<div class="relative text-center">
-							<span class="text-red-600">${error}</span>
-						</div>
-                    </#if>
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-600 text-gray-100 p-3 rounded-lg tracking-wide font-semibold cursor-pointer transition-all duration-300 transform hover:scale-[1.02]">
+                    登 录
+                </button>
+            </div>
+        </div>
+    </form>
+</#assign>
 
-					<div>
-						<button type="submit"
-						        class="w-full flex justify-center bg-purple-800  hover:bg-purple-700 text-gray-100 p-3  rounded-lg tracking-wide font-semibold  cursor-pointer transition ease-in duration-500">
-							登 录
-						</button>
-					</div>
-				</div>
-			</form>
-			<div class="mt-7 text-center text-gray-300 text-xs">
-					<span>
-                Copyright © 2021-2023
-                <a href="#" rel="" target="_blank" title="Codepen aji"
-                   class="text-purple-500 hover:text-purple-600 ">PIGCLOUD</a></span>
-			</div>
-		</div>
-	</div>
-</div>
-</div>
-<svg class="absolute bottom-0 left-0 " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-	<path fill="#fff" fill-opacity="1"
-	      d="M0,0L40,42.7C80,85,160,171,240,197.3C320,224,400,192,480,154.7C560,117,640,75,720,74.7C800,75,880,117,960,154.7C1040,192,1120,224,1200,213.3C1280,203,1360,149,1400,122.7L1440,96L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z"></path>
-</svg>
-</body>
-</html>
+<#include "layout/base.ftl">
