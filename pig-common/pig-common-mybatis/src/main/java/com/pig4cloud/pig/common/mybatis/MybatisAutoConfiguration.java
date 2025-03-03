@@ -88,7 +88,7 @@ public class MybatisAutoConfiguration implements WebMvcConfigurer {
 		//兼容非租户版本,若为租户版本,需删除避免攻击
 		{
 			@Override
-			public void beforeQuery(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+			public void beforeQuery(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
 				// 获取租户ID
 				Long tenantId = TenantContextHolder.getTenantId();
 				if (tenantId != null) {
