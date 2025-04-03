@@ -150,7 +150,7 @@ public class GenTableColumnEntity extends Model<GenDatasourceConf> {
 	/**
 	 * 字段字典类型
 	 */
-	@TableField(updateStrategy = FieldStrategy.IGNORED)
+	@TableField(updateStrategy = FieldStrategy.ALWAYS)
 	private String fieldDict;
 
 	/**
